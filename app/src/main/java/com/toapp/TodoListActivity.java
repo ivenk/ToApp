@@ -7,12 +7,15 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
+    private final String TAG = "TodoListActivity";
+
     private List<Todo> todos;
 
     @Override
@@ -21,7 +24,7 @@ public class TodoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Todos");
+        setTitle("Your todos");
     }
 
 
@@ -42,11 +45,9 @@ public class TodoListActivity extends AppCompatActivity {
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
         for (Todo t : todos) {
-            // TODO: implement view for todo in list
-            TextView tv = new TextView(this);
-            tv.setLayoutParams(new ViewGroup.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT));
-            tv.setText(t.getName());
-            scrollLayout.addView(tv);
+            CustomScrollElement cse = new CustomScrollElement(this);
+            scrollLayout.addView(cse);
+
         }
     }
 
@@ -55,6 +56,10 @@ public class TodoListActivity extends AppCompatActivity {
         // launch activity for creating todos
         Intent intent = new Intent(this, NewTodoActivity.class);
         startActivity(intent);
+    }
+    
+    public void onTodoSelected(View view) {
+        Log.i(TAG, "onTodoSelected: Detail not yet implemented");
     }
 
 }
