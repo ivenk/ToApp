@@ -5,9 +5,8 @@
     <color name="colorAccent">#D81B60</color>
     <color name="scrollElementText">#D81B60</color>
     <color name="scrollElementBackground">#b3b3b5</color>
-    <!-- Used to represent the improtance of the t..do in the list. Priority1 is the least important.-->
-    <color name="scrollElementPriority1"></color>
-    <color name="scrollElementPriority2"></color>
-    <color name="scrollElementPriority3"></color>
+    <color name="scrollElementFavouriteYes">#D81B60</color>
+    <color name="scrollElementFavouriteNo">#b3b3b5</color>
+
 
 </resources>

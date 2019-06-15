@@ -45,9 +45,8 @@ public class TodoListActivity extends AppCompatActivity {
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
         for (Todo t : todos) {
-            CustomScrollElement cse = new CustomScrollElement(this);
+            CustomScrollElement cse = new CustomScrollElement(this, t.getName(), "DummyDate", t.isFavourite());
             scrollLayout.addView(cse);
-
         }
     }
 
