@@ -1,6 +1,7 @@
 package com.toapp;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -16,12 +17,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 
-public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener  {
+public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private final String TAG = "NewTodoActivity";
 
     // TODO: Change the view. The activity_new_todo.xml currently includes hardcoded width for the <include> element
@@ -60,7 +62,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Log.i(TAG, "onCreateButton: date: " + date);
         Log.i(TAG, "onCreateButton: time: " + time);
 
-
         Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked());
         AppDatabase.getInstance(getApplicationContext()).todoDao().insert(t);
         finish();
@@ -70,4 +71,10 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Log.i(TAG, "onDateSet: got called !!!");
     }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        Log.i(TAG, "onTimeSet: got called !!!");
+    }
+
 }
