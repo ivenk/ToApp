@@ -10,12 +10,6 @@ import android.widget.TextView;
 public class CustomScrollElement extends LinearLayout {
     private final String TAG = "CustomScrollElement";
 
-    // not really useful
-    private CustomScrollElement(Context context) {
-        super(context);
-        inflate(context, R.layout.custom_scroll_element, this);
-    }
-
     public CustomScrollElement(Context context, String name, String dueDate, boolean isFavourite) {
         super(context);
         inflate(context, R.layout.custom_scroll_element, this);
@@ -26,6 +20,12 @@ public class CustomScrollElement extends LinearLayout {
         if (isFavourite)
             color = getResources().getColor(R.color.scrollElementFavouriteYes);
         findViewById(R.id.customScrollTodoPriority).setBackgroundColor(color);
+    }
+
+    // not really useful
+    private CustomScrollElement(Context context) {
+        super(context);
+        inflate(context, R.layout.custom_scroll_element, this);
     }
 
     // we do not want that to be called

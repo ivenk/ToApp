@@ -4,10 +4,14 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import java.util.Date;
 
 /** Data object to represent a "to do". Just for data storage */
 
 @Entity
+@TypeConverters(DateConverter.class)
 public class Todo {
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -19,15 +23,16 @@ public class Todo {
     private boolean done;
     @ColumnInfo(name="favourite")
     private boolean favourite;
-    // TODO: Research if Date is deprecated and if it includes a time ?
-    //Date dueDate
+    @ColumnInfo(name="date")
+    private Date dueDate;
 
-    public Todo(int id, String name, String description, boolean done, boolean favourite) {
+    public Todo(int id, String name, String description, boolean done, boolean favourite, Date dueDate) {
         this.id = id;
         this.name =name;
         this.description = description;
         this.done = done;
         this.favourite = favourite;
+        this.dueDate = dueDate;
     }
 
     @Ignore
@@ -56,5 +61,13 @@ public class Todo {
 
     public boolean isFavourite() {
         return favourite;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }
