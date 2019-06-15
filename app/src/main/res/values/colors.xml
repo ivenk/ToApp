@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="scrollElementText">#D81B60</color>
+    <color name="scrollElementBackground">#b3b3b5</color>
+    <!-- Used to represent the improtance of the t..do in the list. Priority1 is the most important.-->
+    <color name="scrollElementPriority1"></color>
+    <color name="scrollElementPriority2"></color>
+    <color name="scrollElementPriority3"></color>
+
 </resources>
