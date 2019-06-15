@@ -22,10 +22,10 @@ public class CustomScrollElement extends LinearLayout {
         ((TextView)findViewById(R.id.customScrollTodoName)).setText(name);
         ((TextView)findViewById(R.id.customScrollTodoDate)).setText(dueDate);
 
-        int colorCode = R.color.scrollElementFavouriteNo;
+        int color = getResources().getColor(R.color.scrollElementFavouriteNo);
         if (isFavourite)
-            colorCode = R.color.scrollElementFavouriteYes;
-        findViewById(R.id.customScrollTodoPriority).setBackgroundColor(colorCode);
+            color = getResources().getColor(R.color.scrollElementFavouriteYes);
+        findViewById(R.id.customScrollTodoPriority).setBackgroundColor(color);
     }
 
     // we do not want that to be called
