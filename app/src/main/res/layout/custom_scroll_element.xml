@@ -7,7 +7,7 @@
     >
 
     <CheckBox
-        android:id="@+id/doneCheckBox"
+        android:id="@+id/customScrollCheckBox"
         android:layout_height="@dimen/scrollElementHeight"
         android:layout_width="0dp"
         android:layout_weight="2"
@@ -15,7 +15,7 @@
 
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/customScrollTodoName"
         android:layout_width="0dp"
         android:layout_height="@dimen/scrollElementHeight"
         android:layout_weight="5"
@@ -23,6 +23,7 @@
         />
 
     <TextView
+        android:id="@+id/customScrollTodoDate"
         android:layout_width="0dp"
         android:layout_weight="5"
         android:layout_height="@dimen/scrollElementHeight"
@@ -30,6 +31,7 @@
         />
 
     <View
+        android:id="@+id/customScrollTodoPriority"
         android:layout_width="0dp"
         android:layout_weight=".5"
         android:layout_height="@dimen/scrollElementHeight"
