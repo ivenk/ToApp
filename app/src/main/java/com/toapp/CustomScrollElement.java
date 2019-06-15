@@ -20,7 +20,7 @@ public class CustomScrollElement extends LinearLayout {
         super(context);
         inflate(context, R.layout.custom_scroll_element, this);
         ((TextView)findViewById(R.id.customScrollTodoName)).setText(name);
-        ((TextView)findViewById(R.id.customScrollTodoName)).setText(dueDate);
+        ((TextView)findViewById(R.id.customScrollTodoDate)).setText(dueDate);
 
         int colorCode = R.color.scrollElementFavouriteNo;
         if (isFavourite)
