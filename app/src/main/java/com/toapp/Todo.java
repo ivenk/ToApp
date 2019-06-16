@@ -6,12 +6,9 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import java.util.Date;
-
 /** Data object to represent a "to do". Just for data storage */
 
 @Entity
-@TypeConverters(DateConverter.class)
 public class Todo {
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -24,9 +21,9 @@ public class Todo {
     @ColumnInfo(name="favourite")
     private boolean favourite;
     @ColumnInfo(name="date")
-    private Date dueDate;
+    private long dueDate;
 
-    public Todo(int id, String name, String description, boolean done, boolean favourite, Date dueDate) {
+    public Todo(int id, String name, String description, boolean done, boolean favourite, long dueDate) {
         this.id = id;
         this.name =name;
         this.description = description;
@@ -36,11 +33,12 @@ public class Todo {
     }
 
     @Ignore
-    public Todo(String name, String description, boolean done, boolean favourite) {
+    public Todo(String name, String description, boolean done, boolean favourite, long dueDate) {
         this.name = name;
         this.description = description;
         this.done = done;
         this.favourite = favourite;
+        this.dueDate = dueDate;
     }
 
     public int getId() {
@@ -63,11 +61,11 @@ public class Todo {
         return favourite;
     }
 
-    public Date getDueDate() {
+    public long getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(long dueDate) {
         this.dueDate = dueDate;
     }
 }
