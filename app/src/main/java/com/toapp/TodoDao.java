@@ -23,4 +23,7 @@ public interface TodoDao {
 
     @Update
     void update(Todo todo);
+
+    @Query("SELECT * FROM Todo WHERE id=:inId")
+    Todo getById(int inId);
 }

@@ -48,6 +48,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         for (Todo t : todos) {
             CustomScrollElement cse = new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite());
+            cse.setTag(t.getId());
             scrollLayout.addView(cse);
         }
     }
@@ -60,7 +61,30 @@ public class TodoListActivity extends AppCompatActivity {
     }
     
     public void onTodoSelected(View view) {
-        Log.i(TAG, "onTodoSelected: Detail not yet implemented");
+        Log.i(TAG, "onTodoSelected: WIP");
+
+        try {
+            int id = (int) view.getTag();
+            AppDatabase db = AppDatabase.getInstance(this);
+            Todo todo = db.todoDao().getById(id);
+
+            // There might be a better way to do this
+            Intent intent = new Intent(this, NewTodoActivity.class);
+            intent.putExtra("id", todo.getId());
+            intent.putExtra("name", todo.getName());
+            intent.putExtra("description", todo.getDescription());
+            intent.putExtra("done", todo.isDone());
+            intent.putExtra("favourite", todo.isFavourite());
+            intent.putExtra("dueDate", new Long(todo.getDueDate()));
+
+            startActivity(intent);
+
+        } catch (ClassCastException cce) {
+            Log.e(TAG, "onTodoSelected: expected id of type int in tag.", cce);
+            return;
+        }
+
+
     }
 
 }
