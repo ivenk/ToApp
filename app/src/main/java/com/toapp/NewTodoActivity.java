@@ -54,7 +54,11 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: ");
-
+        setContentView(R.layout.activity_new_todo);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle("New Todo");
+        create = false;
         dateTimeUpdated = false;
 
         Intent intent = getIntent();
@@ -79,12 +83,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
             ((TextView)findViewById(R.id.input_date)).setText("" + d.toString());
             ((TextView)findViewById(R.id.input_time)).setText("" + d.toString());
         }
-
-        setContentView(R.layout.activity_new_todo);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setTitle("New Todo");
-
 
         if(!create) {
             //TODO String should be in a xml

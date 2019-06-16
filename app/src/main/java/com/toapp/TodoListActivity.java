@@ -10,6 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -47,8 +48,7 @@ public class TodoListActivity extends AppCompatActivity {
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
         for (Todo t : todos) {
-            CustomScrollElement cse = new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite());
-            cse.setTag(t.getId());
+            LinearLayout cse = new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.getId());
             scrollLayout.addView(cse);
         }
     }
@@ -62,9 +62,14 @@ public class TodoListActivity extends AppCompatActivity {
     
     public void onTodoSelected(View view) {
         Log.i(TAG, "onTodoSelected: WIP");
+        Log.i(TAG, "onTodoSelected: view:" + view.toString());
+        Log.i(TAG, "onTodoSelected: view:" + view.getId());
+
 
         try {
-            int id = (int) view.getTag();
+            Log.i(TAG, "onTodoSelected: view context : "+ view.getContext());
+            int id = Integer.parseInt(((TextView)view.findViewById(R.id.customScrollTodoId)).getText().toString());
+
             AppDatabase db = AppDatabase.getInstance(this);
             Todo todo = db.todoDao().getById(id);
 
@@ -82,9 +87,10 @@ public class TodoListActivity extends AppCompatActivity {
         } catch (ClassCastException cce) {
             Log.e(TAG, "onTodoSelected: expected id of type int in tag.", cce);
             return;
+        } catch(NullPointerException npe) {
+            Log.e(TAG, "onTodoSelected: Could not retrieve intent values.", npe);
+            return;
         }
-
-
     }
 
 }
