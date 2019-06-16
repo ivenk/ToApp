@@ -66,8 +66,8 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Switch favouriteView = findViewById(R.id.favourite_switch);
 
         //TODO if not all infos are given throw error
-        Date d = new Date(date1, date2, date3, time1, time2);
 
+        Date d = new Date(date1, date2, date3, time1, time2);
         Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), d.getTime());
         AppDatabase.getInstance(getApplicationContext()).todoDao().insert(t);
         finish();
@@ -80,7 +80,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         this.date2 = i1;
         this.date3 = i2;
 
-        ((TextView)findViewById(R.id.input_date)).setText("" + i + "." + i1 + "." + i2);
+        ((TextView)findViewById(R.id.input_date)).setText("" + i2 + "." + i1 + "." + i);
     }
 
     @Override
@@ -89,6 +89,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
         this.time1 = i;
         this.time2 = i1;
+        //TODO improve time format
         ((TextView)findViewById(R.id.input_time)).setText("" + i + ":" + i1);
     }
 

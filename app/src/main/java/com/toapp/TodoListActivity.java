@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.Date;
 import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
@@ -45,7 +47,7 @@ public class TodoListActivity extends AppCompatActivity {
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
         for (Todo t : todos) {
-            CustomScrollElement cse = new CustomScrollElement(this, t.getName(), "DummyDate", t.isFavourite());
+            CustomScrollElement cse = new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite());
             scrollLayout.addView(cse);
         }
     }
