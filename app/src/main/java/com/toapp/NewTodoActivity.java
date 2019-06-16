@@ -21,7 +21,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
@@ -46,6 +45,9 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     private Boolean create;
 
+    //TODO still some buggs here! What if we only want to change the time not the date in update ? will not work currently.
+    private boolean dateTimeUpdated;
+
     // TODO: Change the view. The activity_new_todo.xml currently includes hardcoded width for the <include> element
 
     @Override
@@ -53,26 +55,30 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: ");
 
-        //TODO check intent
+        dateTimeUpdated = false;
+
         Intent intent = getIntent();
         this.id = intent.getIntExtra("id", -1);
+        Log.i(TAG, "onCreate: id is : " + this.id);
         if (this.id == -1) {
             // if no id was given we assume no values passed and we are trying to create a new object instead of inspecting an existing one.
             create = true;
+        } else {
+            this.name = intent.getStringExtra("name");
+            this.description = intent.getStringExtra("description");
+            this.done = intent.getBooleanExtra("done", false);
+            this.favourite = intent.getBooleanExtra("favourite", false);
+            this.dueDate = intent.getLongExtra("dueDate", -1);
+
+            ((TextView) findViewById(R.id.title_input_label)).setText(name);
+            ((TextView)findViewById(R.id.description_input_label)).setText(description);
+            ((Switch)findViewById(R.id.favourite_switch)).setChecked(favourite);
+
+
+            Date d = new Date(dueDate);
+            ((TextView)findViewById(R.id.input_date)).setText("" + d.toString());
+            ((TextView)findViewById(R.id.input_time)).setText("" + d.toString());
         }
-        this.name = intent.getStringExtra("name");
-        this.description = intent.getStringExtra("description");
-        this.done = intent.getBooleanExtra("done", false);
-        this.favourite = intent.getBooleanExtra("favourite", false);
-        this.dueDate = intent.getLongExtra("dueDate", -1);
-
-        ((TextView) findViewById(R.id.title_input_label)).setText(name);
-        ((TextView)findViewById(R.id.description_input_label)).setText(description);
-        ((Switch)findViewById(R.id.favourite_switch)).setChecked(favourite);
-
-        Date d = new Date(dueDate);
-        ((TextView)findViewById(R.id.input_date)).setText("" + d.toString());
-        ((TextView)findViewById(R.id.input_time)).setText("" + d.toString());
 
         setContentView(R.layout.activity_new_todo);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -104,29 +110,39 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         TextView descriptionView = findViewById(R.id.description_input_label);
         Switch favouriteView = findViewById(R.id.favourite_switch);
 
+        if (titleView.getText().toString() == "") {
+            Toast.makeText(getApplicationContext(), "Please provide a title for your todo !", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        //TODO Combine both branches !! THe only thing holding htis back is the time handling with the int. Convert all to long and jsut store one long value in this class.
         if(create) { // creation mode
             // if crucial information was not provided no t..do will be created
-            if ((titleView.getText().toString() == "") || (date1 == 0) || (date2 == 0) || (date3 == 0)) {
-                Toast.makeText(getApplicationContext(), "Please provide at least a title and a date for your todo !", Toast.LENGTH_LONG).show();
+            if (!dateTimeUpdated) {
+                Toast.makeText(getApplicationContext(), "Please provide a date for your todo !", Toast.LENGTH_LONG).show();
+                return;
             }
-
-            Date d = new Date(date1, date2, date3, time1, time2);
-            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), d.getTime());
+            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), new Date(date1, date2, date3, time1, time2).getTime());
             AppDatabase.getInstance(getApplicationContext()).todoDao().insert(t);
-            finish();
         } else { // update mode
-            Date d = new Date(date1, date2, date3, time1, time2);
-            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), d.getTime());
+            long dateTime;
+            // if no new time and date is given we asume the old ones are correct.
+            if (dateTimeUpdated) {
+                //TODO mind that only one might have been set !!!
+                dateTime = dueDate;
+            } else {
+                dateTime = new Date(date1, date2, date3, time1, time2).getTime();
+            }
+            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), dateTime);
             AppDatabase.getInstance(getApplicationContext()).todoDao().update(t);
-            finish();
         }
+        finish();
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Log.i(TAG, "onDateSet: with i: " + i + "i1" + i1 + "i2"+ i2);
+        dateTimeUpdated = true;
+
         this.date1 = i;
         this.date2 = i1;
         this.date3 = i2;
@@ -137,6 +153,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Log.i(TAG, "onTimeSet: got called !!!");
+        dateTimeUpdated = true;
 
         this.time1 = i;
         this.time2 = i1;
