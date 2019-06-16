@@ -23,7 +23,8 @@
             android:ems="10"
             android:inputType="textPersonName"
             android:paddingTop="10dp"
-            android:text="@string/title_input_label" />
+            android:text="@string/title_input_label"
+            />
 
         <EditText
             android:id="@+id/description_input_label"
