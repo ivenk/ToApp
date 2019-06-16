@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -65,7 +66,10 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         TextView descriptionView = findViewById(R.id.description_input_label);
         Switch favouriteView = findViewById(R.id.favourite_switch);
 
-        //TODO if not all infos are given throw error
+        // if crucial information was not provided no t..do will be created
+        if ((titleView.getText().toString() == "") || (date1 == 0) || (date2 == 0)|| (date3 == 0)){
+            Toast.makeText(getApplicationContext(), "Please provide at least a title and a date for your todo !", Toast.LENGTH_LONG).show();
+        }
 
         Date d = new Date(date1, date2, date3, time1, time2);
         Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), d.getTime());
