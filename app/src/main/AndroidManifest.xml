@@ -13,7 +13,7 @@
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".NewTodoActivity"
+            android:name=".DetailTodoActivity"
             android:label="@string/title_activity_new_todo"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

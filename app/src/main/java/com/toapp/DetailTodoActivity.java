@@ -26,8 +26,8 @@ import org.w3c.dom.Text;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private final String TAG = "NewTodoActivity";
+public class DetailTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private final String TAG = "DetailTodoActivity";
 
     private int date1;
     private int date2;

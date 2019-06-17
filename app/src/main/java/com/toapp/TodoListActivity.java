@@ -1,6 +1,5 @@
 package com.toapp;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -56,7 +55,7 @@ public class TodoListActivity extends AppCompatActivity {
     // gets called once the create_new_todo button is clicked
     public void onCreateNewTodo(View view) {
         // launch activity for creating todos
-        Intent intent = new Intent(this, NewTodoActivity.class);
+        Intent intent = new Intent(this, DetailTodoActivity.class);
         startActivity(intent);
     }
     
@@ -74,7 +73,7 @@ public class TodoListActivity extends AppCompatActivity {
             Todo todo = db.todoDao().getById(id);
 
             // There might be a better way to do this
-            Intent intent = new Intent(this, NewTodoActivity.class);
+            Intent intent = new Intent(this, DetailTodoActivity.class);
             intent.putExtra("id", todo.getId());
             intent.putExtra("name", todo.getName());
             intent.putExtra("description", todo.getDescription());
