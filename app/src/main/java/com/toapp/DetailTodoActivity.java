@@ -24,6 +24,9 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.Date;
 
 public class DetailTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -119,6 +122,9 @@ public class DetailTodoActivity extends AppCompatActivity implements DatePickerD
                 Toast.makeText(getApplicationContext(), "Please provide a date for your todo !", Toast.LENGTH_LONG).show();
                 return;
             }
+            //TODO the date convertions dont work like this.
+            Log.i(TAG, "onCreateButton: Creation date set is : " + new Date(new Date(date1, date2, date3, time1, time2).toInstant().toEpochMilli()));
+
             Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), new Date(date1, date2, date3, time1, time2).getTime());
             AppDatabase.getInstance(getApplicationContext()).todoDao().insert(t);
         } else { // update mode
