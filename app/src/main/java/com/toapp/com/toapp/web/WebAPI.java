@@ -8,10 +8,13 @@ import java.util.List;
 
 public interface WebAPI {
 
+    // POST: api/todos
     boolean createTodos(List<Todo> todos);
 
+    //GET api/todos
     List<Todo> readAllTodos() throws MalformedURLException, IOException;
 
+    //GET: api/todos
     Todo readTodo(int id);
 
     boolean updateTodo(int id, Todo newVersion);

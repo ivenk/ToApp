@@ -2,6 +2,8 @@ package com.toapp.com.toapp.web;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.toapp.Todo;
 
 import java.io.BufferedInputStream;
@@ -10,6 +12,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WebConnector implements WebAPI {
@@ -28,6 +31,7 @@ public class WebConnector implements WebAPI {
 
     @Override
     public List<Todo> readAllTodos() throws MalformedURLException, IOException{
+        List<Todo> results = new ArrayList<>();
         URL url = new URL(BASEURI + TODOENPOINT);
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
@@ -41,7 +45,7 @@ public class WebConnector implements WebAPI {
         }finally {
             urlConnection.disconnect();
         }
-        return null;
+        return results;
     }
 
     @Override
