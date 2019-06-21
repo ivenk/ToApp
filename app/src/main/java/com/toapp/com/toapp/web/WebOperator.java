@@ -20,34 +20,27 @@ public class WebOperator implements WebAPI {
     }
 
     @Override
-    public List<Todo> readAllTodos() throws IOException, JSONException {
+    public List<Todo> readAllTodos() {
         Log.i(TAG, "readAllTodos: Weboperator called");
         WebConnector webConnector = new WebConnector();
-        List<JSONObject> rawTodos = webConnector.readAllTodos();
         try {
+            List<JSONObject> rawTodos = webConnector.readAllTodos();
+            if(rawTodos == null) //something went wrong earlier, nothing to do here. Error was thrown already.
+                return null;
             int id = rawTodos.get(0).getInt("id");
             Log.i(TAG, "readAllTodos: Found id was : " + id);
         } catch(JSONException jse) {
-            throw jse;
+            Log.e(TAG, "readAllTodos: JSONException while trying to fetch results from the webserver.", jse);
         }
-
-        Log.i(TAG, "readAllTodos: " + rawTodos.toString());
-
         return null;
     }
 
     @Override
-    public Todo readTodo(int id) {
-        return null;
-    }
+    public boolean deleteAllTodos() {
+        Log.i(TAG, "deleteAllTodos: Weboperator.deleteAllTodos() called!");
 
-    @Override
-    public boolean updateTodo(int id, Todo newVersion) {
         return false;
     }
 
-    @Override
-    public boolean deleteTodo(int id) {
-        return false;
-    }
+
 }
