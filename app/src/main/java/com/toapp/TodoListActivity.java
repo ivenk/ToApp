@@ -12,6 +12,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.toapp.com.toapp.web.WebOperator;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +32,23 @@ public class TodoListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Your todos");
+
+        //TODO remove this !!
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                WebOperator webOperator = new WebOperator();
+                try {
+                    webOperator.readAllTodos();
+                } catch (IOException e) {
+                    Log.e(TAG, "onCreate: Could not reach webserver !", e);
+                }catch (JSONException jse) {
+                    Log.e(TAG, "run: Could not parse received JSON !", jse);
+                }
+            }
+        }.start();
     }
 
 
