@@ -49,7 +49,7 @@ public class WebConnector{
             Log.e(TAG, "readAllTodos: Malformed url !", mue);
         } catch (IOException ioe){
             Log.e(TAG, "readAllTodos: IOException ocured while trying to unmarshall input stream.", ioe);
-        }finally {
+        } finally {
             if(urlConnection != null)
                 urlConnection.disconnect();
         }
@@ -77,6 +77,7 @@ public class WebConnector{
             URL url = new URL(BASEURI + TODOENPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("DELETE");
+            urlConnection.connect();
             BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String result = in.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
             Log.w(TAG, "deleteAllTodos: result read was : " +result);
@@ -86,7 +87,7 @@ public class WebConnector{
             Log.e(TAG, "deleteAllTodos: ", mue);
         } catch (ProtocolException pte) {
             Log.e(TAG, "deleteAllTodos: ", pte);
-        } catch (IOException ioe){
+        } catch (IOException ioe) {
             Log.e(TAG, "deleteAllTodos: ", ioe);
         }
         return false;
