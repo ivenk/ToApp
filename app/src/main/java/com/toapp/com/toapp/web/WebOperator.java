@@ -38,9 +38,7 @@ public class WebOperator implements WebAPI {
     @Override
     public boolean deleteAllTodos() {
         Log.i(TAG, "deleteAllTodos: Weboperator.deleteAllTodos() called!");
-
-        return false;
+        WebConnector webConnector = new WebConnector();
+        return webConnector.deleteAllTodos();
     }
-
-
 }
