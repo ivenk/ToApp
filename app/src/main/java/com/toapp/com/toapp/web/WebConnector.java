@@ -80,6 +80,8 @@ public class WebConnector{
             BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String result = in.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
             Log.w(TAG, "deleteAllTodos: result read was : " +result);
+
+            return Boolean.parseBoolean(result);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "deleteAllTodos: ", mue);
         } catch (ProtocolException pte) {
