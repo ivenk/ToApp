@@ -17,8 +17,7 @@ import java.util.List;
 public class UnmarshallHelper {
     private static final String TAG = "UnmarshallHelper";
 
-    public static List<JSONObject> unmarshall(InputStream is) {
-        List<JSONObject> results = new ArrayList<>();
+    public static JSONArray unmarshall(InputStream is) {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuilder strBuilder = new StringBuilder();
         try {
@@ -26,12 +25,7 @@ public class UnmarshallHelper {
             while((line = br.readLine()) != null) {
                 strBuilder.append(line);
             }
-            JSONArray jsonArray = new JSONArray(strBuilder.toString());
-
-            for (int i =0; i< jsonArray.length(); i++) {
-                results.add(jsonArray.getJSONObject(i));
-            }
-            return results;
+            return new JSONArray(strBuilder.toString());
         }
         catch (IOException ioe) {
             Log.e(TAG, "unmarshall: ", ioe);
