@@ -11,12 +11,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,17 +44,7 @@ public class WebConnector{
             urlConnection.setRequestMethod("GET");
 
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            JSONArray jsonArray = UnmarshallHelper.unmarshall(in);
-
-            List<JSONObject> results = new ArrayList<>();
-
-            for (int i =0; i< jsonArray.length(); i++) {
-                results.add(jsonArray.getJSONObject(i));
-            }
-            return results;
-            //TODO read and unmarshall stream
-        } catch (JSONException jse){
-            Log.e(TAG, "readAllTodos: JSONException occured while trying to parse fetched results to jsonobjects.", jse);
+            return UnmarshallHelper.unmarshall(in);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "readAllTodos: Malformed url !", mue);
         } catch (IOException ioe){
@@ -84,9 +77,9 @@ public class WebConnector{
             URL url = new URL(BASEURI + TODOENPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("DELETE");
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            JSONArray jsonArray = UnmarshallHelper.unmarshall(in);
-
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String result = in.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
+            Log.w(TAG, "deleteAllTodos: result read was : " +result);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "deleteAllTodos: ", mue);
         } catch (ProtocolException pte) {
