@@ -2,6 +2,8 @@ package com.toapp.com.toapp.web;
 
 import com.toapp.Todo;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -12,7 +14,7 @@ public interface WebAPI {
     boolean createTodos(List<Todo> todos);
 
     //GET api/todos
-    List<Todo> readAllTodos() throws MalformedURLException, IOException;
+    List<Todo> readAllTodos() throws JSONException, IOException;
 
     //GET: api/todos
     Todo readTodo(int id);
