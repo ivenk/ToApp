@@ -73,15 +73,16 @@ public class WebConnector{
     
     public boolean deleteAllTodos() {
         HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
         try {
             URL url = new URL(BASEURI + TODOENPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("DELETE");
+            urlConnection.setReadTimeout(2000); // 2 seconds
             urlConnection.connect();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            String result = in.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String result = reader.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
             Log.w(TAG, "deleteAllTodos: result read was : " +result);
-
             return Boolean.parseBoolean(result);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "deleteAllTodos: ", mue);
@@ -89,6 +90,12 @@ public class WebConnector{
             Log.e(TAG, "deleteAllTodos: ", pte);
         } catch (IOException ioe) {
             Log.e(TAG, "deleteAllTodos: ", ioe);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ioe) {
+                Log.e(TAG, "deleteAllTodos: IOException occured while trying to close bufferedreader", ioe);
+            }
         }
         return false;
     }
