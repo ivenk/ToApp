@@ -14,11 +14,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.toapp.R;
 
 public class LoginActivity extends AppCompatActivity {
     private final String TAG = "LoginActivity";
+
+    EditText userField;
+    EditText passField;
+    Button loginButton;
+    TextView errorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +33,13 @@ public class LoginActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // we want to watch imput to both fields
-        final Button loginButton = findViewById(R.id.login);
-        EditText userField = findViewById(R.id.username);
-        final EditText passField = findViewById(R.id.password);
+        // find our ui components
+        loginButton = findViewById(R.id.login);
+        userField = findViewById(R.id.username);
+        passField = findViewById(R.id.password);
+        errorMessage = findViewById(R.id.login_error);
+
+        // we want to watch input to both fields
         TextWatcher myTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -53,9 +62,28 @@ public class LoginActivity extends AppCompatActivity {
 
         userField.addTextChangedListener(myTextWatcher);
         passField.addTextChangedListener(myTextWatcher);
+    }
+
+    public void onLoginButtonClicked(View view) {
+        Log.i(TAG, "onLoginButtonClicked: Login click registered");
+
+        if (!isValidMailAdress(userField.getText().toString())) {
+
+        }
+        Log.i(TAG, "onLoginButtonClicked: Mail format valid !");
+    }
+
+    private boolean isValidMailAdress(String mailAdress) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(mailAdress).matches();
+    }
+
+    private void showLoginErrorMessage(String errorMessage) {
+
 
     }
 }
+
+
 
 
 //TODO : Now !
