@@ -13,10 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.toapp.com.toapp.web.WebOperator;
+import com.toapp.data.AppDatabase;
+import com.toapp.data.Todo;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
