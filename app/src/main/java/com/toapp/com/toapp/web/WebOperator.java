@@ -2,7 +2,8 @@ package com.toapp.com.toapp.web;
 
 import android.util.Log;
 
-import com.toapp.Todo;
+import com.toapp.data.Todo;
+import com.toapp.data.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,5 +50,11 @@ public class WebOperator implements WebAPI {
         Log.i(TAG, "deleteAllTodos: Weboperator.deleteAllTodos() called!");
         WebConnector webConnector = new WebConnector();
         return webConnector.deleteAllTodos();
+    }
+
+    @Override
+    public boolean authenticateUser(User user) {
+        WebConnector webConnector = new WebConnector();
+        return webConnector.authenticateUser(user);
     }
 }

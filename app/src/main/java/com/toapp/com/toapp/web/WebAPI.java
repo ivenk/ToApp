@@ -1,6 +1,8 @@
 package com.toapp.com.toapp.web;
 
-import com.toapp.Todo;
+import com.toapp.data.Todo;
+import com.toapp.data.User;
+
 import java.util.List;
 
 public interface WebAPI {
@@ -21,4 +23,7 @@ public interface WebAPI {
     //boolean autenticateUser();
 
     boolean deleteAllTodos();
+
+    boolean authenticateUser(User user);
+
 }

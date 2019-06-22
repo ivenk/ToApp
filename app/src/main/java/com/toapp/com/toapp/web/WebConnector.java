@@ -4,10 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.toapp.Todo;
+import com.toapp.data.Todo;
+import com.toapp.data.User;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -19,10 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.Buffer;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class WebConnector{
     private final String TAG = "WebConnector";
@@ -97,6 +93,10 @@ public class WebConnector{
                 Log.e(TAG, "deleteAllTodos: IOException occured while trying to close bufferedreader", ioe);
             }
         }
+        return false;
+    }
+
+    public boolean authenticateUser(User user) {
         return false;
     }
 }
