@@ -2,6 +2,8 @@ package com.toapp.com.toapp.web;
 
 import android.util.Log;
 
+import com.toapp.data.User;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
