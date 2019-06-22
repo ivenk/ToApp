@@ -60,4 +60,23 @@
         app:layout_constraintTop_toBottomOf="@+id/password"
         app:layout_constraintVertical_bias="0.2" />
 
+    <TextView
+        android:id="@+id/create_new_todo"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginEnd="8dp"
+        android:paddingTop="5dp"
+        android:background="@color/colorAccent"
+        android:onClick="onCreateNewTodo"
+        android:text="bla"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:useCompatPadding="false" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
