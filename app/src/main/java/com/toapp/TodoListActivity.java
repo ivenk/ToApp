@@ -40,13 +40,8 @@ public class TodoListActivity extends AppCompatActivity {
             public void run() {
                 super.run();
                 WebOperator webOperator = new WebOperator();
-                try {
-                    webOperator.readAllTodos();
-                } catch (IOException e) {
-                    Log.e(TAG, "onCreate: Could not reach webserver !", e);
-                }catch (JSONException jse) {
-                    Log.e(TAG, "run: Could not parse received JSON !", jse);
-                }
+                //webOperator.readAllTodos();
+                webOperator.deleteAllTodos();
             }
         }.start();
     }
