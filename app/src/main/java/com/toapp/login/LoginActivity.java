@@ -47,6 +47,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 Log.i(TAG, "onTextChanged: Called !");
+
+                errorMessage.setVisibility(View.INVISIBLE);
+
                 // if both fields have a value set
                 if((charSequence.length() > 0) && (passField.getText().length() > 0)) {
                     Log.i(TAG, "onTextChanged: both fields have values");
@@ -69,11 +72,13 @@ public class LoginActivity extends AppCompatActivity {
 
         if (!isValidMailAdress(userField.getText().toString())) {
             showLoginErrorMessage(getString(R.string.invalid_mail));
+            return;
         }
         Log.i(TAG, "onLoginButtonClicked: Mail format valid !");
 
         if (passField.getText().length() != 6) {
             showLoginErrorMessage(getString(R.string.invalid_password));
+            return;
         }
         Log.i(TAG, "onLoginButtonClicked: Password format valid !");
 
@@ -86,20 +91,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showLoginErrorMessage(String errorMessage) {
-
-
-
-
+        this.errorMessage.setVisibility(View.VISIBLE);
+        this.errorMessage.setText(errorMessage);
+        // TODO: maybe check if the text actually fits ?
     }
 }
-
-
-
-
-//TODO : Now !
-// Design:
-// Check if both fields have values in them. If yes ->  enable login button
-// If login button is pressed check wether both fields acutally match the critiria and return error messages
-//      - criteria :
-//          - mail matches: android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-//          - check if password is numeric and 6 chars long
