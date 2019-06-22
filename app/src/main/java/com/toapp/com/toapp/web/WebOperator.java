@@ -5,6 +5,7 @@ import android.util.Log;
 import com.toapp.data.Todo;
 import com.toapp.data.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -55,6 +56,16 @@ public class WebOperator implements WebAPI {
     @Override
     public boolean authenticateUser(User user) {
         WebConnector webConnector = new WebConnector();
-        return webConnector.authenticateUser(user);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("pwd", user.getPwd());
+            jsonObject.put("email", user.getEmail());
+            jsonArray.put(jsonObject);
+            return webConnector.authenticateUser(jsonArray);
+        } catch (JSONException jse) {
+            Log.e(TAG, "authenticateUser: JSONException occured while trying to marshall user." + jse);
+        }
+        return false;
     }
 }
