@@ -68,9 +68,17 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG, "onLoginButtonClicked: Login click registered");
 
         if (!isValidMailAdress(userField.getText().toString())) {
-
+            showLoginErrorMessage(getString(R.string.invalid_mail));
         }
         Log.i(TAG, "onLoginButtonClicked: Mail format valid !");
+
+        if (passField.getText().length() != 6) {
+            showLoginErrorMessage(getString(R.string.invalid_password));
+        }
+        Log.i(TAG, "onLoginButtonClicked: Password format valid !");
+
+        //TODO do login
+        Log.i(TAG, "onLoginButtonClicked: Trying to authenticate user");
     }
 
     private boolean isValidMailAdress(String mailAdress) {
@@ -78,6 +86,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showLoginErrorMessage(String errorMessage) {
+
+
 
 
     }
