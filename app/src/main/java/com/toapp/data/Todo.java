@@ -1,4 +1,4 @@
-package com.toapp;
+package com.toapp.data;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
