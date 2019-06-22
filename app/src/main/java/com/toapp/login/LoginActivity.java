@@ -1,5 +1,6 @@
 package com.toapp.login;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,14 +18,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.toapp.R;
+import com.toapp.com.toapp.web.WebOperator;
+import com.toapp.data.User;
 
 public class LoginActivity extends AppCompatActivity {
     private final String TAG = "LoginActivity";
 
-    EditText userField;
-    EditText passField;
-    Button loginButton;
-    TextView errorMessage;
+    private EditText userField;
+    private EditText passField;
+    private Button loginButton;
+    private TextView errorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +49,10 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.i(TAG, "onTextChanged: Called !");
-
                 errorMessage.setVisibility(View.INVISIBLE);
 
                 // if both fields have a value set
                 if((charSequence.length() > 0) && (passField.getText().length() > 0)) {
-                    Log.i(TAG, "onTextChanged: both fields have values");
                     loginButton.setEnabled(true);
                 } else {
                     loginButton.setEnabled(false);
@@ -69,21 +69,29 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginButtonClicked(View view) {
         Log.i(TAG, "onLoginButtonClicked: Login click registered");
+        String mail = userField.getText().toString();
+        String pass = passField.getText().toString();
 
-        if (!isValidMailAdress(userField.getText().toString())) {
+        if (!isValidMailAdress(mail)) {
             showLoginErrorMessage(getString(R.string.invalid_mail));
             return;
         }
         Log.i(TAG, "onLoginButtonClicked: Mail format valid !");
 
-        if (passField.getText().length() != 6) {
+        if (pass.length() != 6) {
             showLoginErrorMessage(getString(R.string.invalid_password));
             return;
         }
         Log.i(TAG, "onLoginButtonClicked: Password format valid !");
 
-        //TODO do login
         Log.i(TAG, "onLoginButtonClicked: Trying to authenticate user");
+        UserAuthenticator userAuthenticator = new UserAuthenticator();
+        userAuthenticator.execute(new User(mail, pass));
+    }
+
+    private void authenticationResult(Boolean result) {
+        Log.i(TAG, "authenticationResult: called with : " + result);
+        //TODO : End loading screen
     }
 
     private boolean isValidMailAdress(String mailAdress) {
@@ -94,5 +102,23 @@ public class LoginActivity extends AppCompatActivity {
         this.errorMessage.setVisibility(View.VISIBLE);
         this.errorMessage.setText(errorMessage);
         // TODO: maybe check if the text actually fits ?
+    }
+
+    public class UserAuthenticator extends AsyncTask<User, Void, Boolean> {
+        private final String TAG = "UserAuthenticator";
+
+        @Override
+        protected Boolean doInBackground(User... params) {
+            WebOperator webOperator = new WebOperator();
+            return webOperator.authenticateUser(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Log.w(TAG, "onPostExecute: got : " + result);
+            authenticationResult(result);
+
+        }
     }
 }
