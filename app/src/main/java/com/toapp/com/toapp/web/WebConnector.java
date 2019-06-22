@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class WebConnector{
     private final String TAG = "WebConnector";
@@ -75,14 +76,12 @@ public class WebConnector{
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         try {
-            URL url = new URL(BASEURI + TODOENPOINT);
+            URL url = new URL(BASEURI + TODOENPOINT);//"http://10.0.2.2:9876");//BASEURI + TODOENPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("DELETE");
-            urlConnection.setReadTimeout(2000); // 2 seconds
-            urlConnection.connect();
+            urlConnection.setRequestProperty("Content-Type", "application/json");
             reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String result = reader.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
-            Log.w(TAG, "deleteAllTodos: result read was : " +result);
             return Boolean.parseBoolean(result);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "deleteAllTodos: ", mue);
@@ -92,7 +91,8 @@ public class WebConnector{
             Log.e(TAG, "deleteAllTodos: ", ioe);
         } finally {
             try {
-                reader.close();
+                if (reader != null)
+                    reader.close();
             } catch (IOException ioe) {
                 Log.e(TAG, "deleteAllTodos: IOException occured while trying to close bufferedreader", ioe);
             }
