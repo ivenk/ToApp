@@ -11,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
@@ -31,6 +33,12 @@ public class TodoListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Your todos");
+
+        Intent intent = getIntent();
+        boolean online = intent.getBooleanExtra("online", false);
+        if(!online) {
+            Toast.makeText(this, "There seems to be no connection to the internet. Working offline ...", Toast.LENGTH_LONG).show();
+        }
     }
 
 

@@ -31,7 +31,8 @@ public class StartUpActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             // load listactivity
-            Intent intent = new Intent(this, ListActivity.class);
+            Intent intent = new Intent(this, TodoListActivity.class);
+            intent.putExtra("online", false);
             startActivity(intent);
         }
     }

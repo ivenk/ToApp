@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             showLoginErrorMessage(getString(R.string.login_failed));
         } else {
             Intent intent = new Intent(this, TodoListActivity.class);
+            intent.putExtra("online", true);
             startActivity(intent);
         }
     }
