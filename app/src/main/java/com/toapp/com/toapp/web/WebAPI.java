@@ -26,4 +26,6 @@ public interface WebAPI {
 
     boolean authenticateUser(User user);
 
+    boolean checkAvailability();
+
 }

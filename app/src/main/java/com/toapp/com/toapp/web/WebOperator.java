@@ -68,4 +68,9 @@ public class WebOperator implements WebAPI {
         }
         return false;
     }
+
+    @Override
+    public boolean checkAvailability() {
+        return false;
+    }
 }
