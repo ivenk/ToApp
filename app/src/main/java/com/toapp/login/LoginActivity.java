@@ -1,5 +1,8 @@
 package com.toapp.login;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -13,11 +16,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.toapp.R;
+import com.toapp.TodoListActivity;
 import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.User;
 
@@ -28,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passField;
     private Button loginButton;
     private TextView errorMessage;
+    private LinearLayout loadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         userField = findViewById(R.id.username);
         passField = findViewById(R.id.password);
         errorMessage = findViewById(R.id.login_error);
+        loadingIndicator = findViewById(R.id.loading_indicator);
 
         // we want to watch input to both fields
         TextWatcher myTextWatcher = new TextWatcher() {
@@ -87,11 +96,20 @@ public class LoginActivity extends AppCompatActivity {
         Log.i(TAG, "onLoginButtonClicked: Trying to authenticate user");
         UserAuthenticator userAuthenticator = new UserAuthenticator();
         userAuthenticator.execute(new User(mail, pass));
+
+        displayLoading();
     }
 
     private void authenticationResult(Boolean result) {
         Log.i(TAG, "authenticationResult: called with : " + result);
-        //TODO : End loading screen
+        hideLoading();
+
+        if(!result) {
+            showLoginErrorMessage(getString(R.string.login_failed));
+        } else {
+            Intent intent = new Intent(this, TodoListActivity.class);
+            startActivity(intent);
+        }
     }
 
     private boolean isValidMailAdress(String mailAdress) {
@@ -102,6 +120,33 @@ public class LoginActivity extends AppCompatActivity {
         this.errorMessage.setVisibility(View.VISIBLE);
         this.errorMessage.setText(errorMessage);
         // TODO: maybe check if the text actually fits ?
+    }
+
+    private void displayLoading() {
+        loadingIndicator.setVisibility(View.VISIBLE);
+        loadingIndicator.bringToFront();
+        loginButton.setVisibility(View.GONE);
+        hideKeyboard(this);
+    }
+
+    private void hideLoading() {
+        loadingIndicator.setVisibility(View.GONE);
+        loginButton.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Stolen from the great rant on androids keyboard api design : https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+     * @param activity
+     */
+    private void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public class UserAuthenticator extends AsyncTask<User, Void, Boolean> {
@@ -118,7 +163,8 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(result);
             Log.w(TAG, "onPostExecute: got : " + result);
             authenticationResult(result);
-
         }
     }
+
+    //TODO: [Extra] Add max length to password and mail input + add little field at the end of password input to show current length of entered password!
 }
