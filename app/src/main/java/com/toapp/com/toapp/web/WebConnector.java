@@ -5,10 +5,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.toapp.data.Todo;
-import com.toapp.data.User;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
