@@ -28,7 +28,7 @@ class WebConnector{
 
     private final String BASEURI = "http://10.0.2.2:8080/api/";
     private final String TODOENPOINT = "todos";
-    private final String USERENTPOINT = "users";
+    private final String USERENTPOINT = "users/auth";
 
     public boolean createTodos(List<Todo> todos) {
         return false;
@@ -99,23 +99,27 @@ class WebConnector{
         return false;
     }
 
-    //TODO: This is completely untested !! needs testing !!
-    public boolean authenticateUser(JSONArray userJSON) {
+    public boolean authenticateUser(JSONObject userJSON) {
         Log.w(TAG, "authenticateUser: The json we are about to authenticate looks like this : " +userJSON.toString());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
+        OutputStreamWriter out = null;
         try {
             URL url = new URL(BASEURI + USERENTPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("PUT");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setDoOutput(true);
-            OutputStreamWriter out = new OutputStreamWriter(
+            out = new OutputStreamWriter(
                     urlConnection.getOutputStream());
             out.write(userJSON.toString());
             out.close();
+            Log.w(TAG, "authenticateUser: Response code was : " + urlConnection.getResponseCode());
+
             reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            Log.w(TAG, "authenticateUser: Response code was : " + urlConnection.getResponseCode());
             String result = reader.readLine(); // Result is supposed to be one line. If its more, something is wrong and we are not interested.
             return Boolean.parseBoolean(result);
         } catch(MalformedURLException mue) {
@@ -123,11 +127,15 @@ class WebConnector{
         } catch (ProtocolException pe) {
             Log.e(TAG, "authenticateUser: ProtocolException occured while trying to set up request for user authentication.", pe);
         } catch (IOException ioe) {
-            Log.e(TAG, "authenticateUser: IOException occured while ", ioe);
+            Log.e(TAG, "authenticateUser: IOException occured while trying to authenticate user", ioe);
         } finally {
             try {
-                if (reader != null)
+                if (reader != null) {
                     reader.close();
+                }
+                if(out != null) {
+                    out.close();
+                }
             } catch (IOException ioe) {
                 Log.e(TAG, "authenticateUser: IOException occured while trying to close bufferedreader", ioe);
             }

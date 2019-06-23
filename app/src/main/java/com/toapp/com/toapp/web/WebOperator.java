@@ -57,12 +57,10 @@ public class WebOperator implements WebAPI {
     public boolean authenticateUser(User user) {
         WebConnector webConnector = new WebConnector();
         try {
-            JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("pwd", user.getPwd());
             jsonObject.put("email", user.getEmail());
-            jsonArray.put(jsonObject);
-            return webConnector.authenticateUser(jsonArray);
+            return webConnector.authenticateUser(jsonObject);
         } catch (JSONException jse) {
             Log.e(TAG, "authenticateUser: JSONException occured while trying to marshall user." + jse);
         }
