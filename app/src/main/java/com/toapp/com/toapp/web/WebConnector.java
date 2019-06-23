@@ -134,4 +134,10 @@ public class WebConnector{
         }
         return false;
     }
+
+    public boolean checkAvailability() {
+
+
+        return false;
+    }
 }
