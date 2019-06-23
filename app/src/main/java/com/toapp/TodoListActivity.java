@@ -31,18 +31,6 @@ public class TodoListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Your todos");
-
-        //TODO remove this !!
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                WebOperator webOperator = new WebOperator();
-                //webOperator.readAllTodos();
-                webOperator.deleteAllTodos();
-            }
-        }.start();
     }
 
 
@@ -58,7 +46,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         // TODO: Display todos in list view
         // not super sure why viewgroup instead of linear layout
-        ViewGroup scrollLayout = (ViewGroup) findViewById(R.id.scroll_layout);
+        ViewGroup scrollLayout = findViewById(R.id.scroll_layout);
         // remove all children
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
