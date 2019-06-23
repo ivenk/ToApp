@@ -136,8 +136,26 @@ public class WebConnector{
     }
 
     public boolean checkAvailability() {
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(BASEURI + TODOENPOINT);
+            Log.i(TAG, "readAllTodos: connection url is " + url.toString());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
 
+            if (urlConnection.getResponseCode() == 200) {
+                return true;
+            }
 
+        } catch (MalformedURLException mue) {
+            Log.e(TAG, "readAllTodos: Malformed url !", mue);
+        } catch (IOException ioe){
+            Log.e(TAG, "readAllTodos: IOException ocured while trying to unmarshall input stream.", ioe);
+        } finally {
+            if(urlConnection != null)
+                urlConnection.disconnect();
+        }
         return false;
     }
 }

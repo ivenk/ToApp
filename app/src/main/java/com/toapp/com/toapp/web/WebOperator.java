@@ -71,6 +71,9 @@ public class WebOperator implements WebAPI {
 
     @Override
     public boolean checkAvailability() {
-        return false;
+        WebConnector webConnector = new WebConnector();
+        boolean b = webConnector.checkAvailability();
+        Log.i(TAG, "checkAvailability: returned " + b);
+        return b;
     }
 }
