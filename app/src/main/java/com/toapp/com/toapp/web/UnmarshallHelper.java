@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnmarshallHelper {
+class UnmarshallHelper {
     private static final String TAG = "UnmarshallHelper";
 
     public static List<JSONObject> unmarshall(InputStream is) {

@@ -23,7 +23,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 
-public class WebConnector{
+class WebConnector{
     private final String TAG = "WebConnector";
 
     private final String BASEURI = "http://10.0.2.2:8080/api/";
