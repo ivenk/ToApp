@@ -57,12 +57,12 @@ class WebConnector{
     }
 
     public Todo readTodo(int id) {
-        Log.e(TAG, "deleteTodo: Not yet implemented !");
+        Log.e(TAG, "readTodo: Not yet implemented !");
         return null;
     }
 
     public boolean updateTodo(int id, Todo newVersion) {
-        Log.e(TAG, "deleteTodo: Not yet implemented !");
+        Log.e(TAG, "updateTodo: Not yet implemented !");
         return false;
     }
 
