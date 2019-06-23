@@ -47,6 +47,8 @@ public class DetailTodoActivity extends AppCompatActivity implements DatePickerD
 
     // TODO: Change the view. The activity_new_todo.xml currently includes hardcoded width for the <include> element
 
+    // TODO: need option to delete todo ! Mit seperater bestäntigung
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
