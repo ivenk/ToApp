@@ -1,6 +1,8 @@
 package com.toapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +20,9 @@ import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +30,7 @@ public class TodoListActivity extends AppCompatActivity {
     private final String TAG = "TodoListActivity";
 
     private List<Todo> todos;
+    ViewGroup scrollLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +55,12 @@ public class TodoListActivity extends AppCompatActivity {
         //    tdos = new ArrayList<>();
         //TODO : Think about mutli threading
 
-        AppDatabase db = AppDatabase.getInstance(this);
-        todos = db.todoDao().getAll();
-
-        // TODO: Display todos in list view
         // not super sure why viewgroup instead of linear layout
-        ViewGroup scrollLayout = findViewById(R.id.scroll_layout);
+        scrollLayout = findViewById(R.id.scroll_layout);
         // remove all children
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
-        for (Todo t : todos) {
-            LinearLayout cse = new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.getId());
-            scrollLayout.addView(cse);
-        }
+        new LocalTodoGetter().execute(this);
     }
 
     // gets called once the create_new_todo button is clicked
@@ -72,11 +71,6 @@ public class TodoListActivity extends AppCompatActivity {
     }
     
     public void onTodoSelected(View view) {
-        Log.i(TAG, "onTodoSelected: WIP");
-        Log.i(TAG, "onTodoSelected: view:" + view.toString());
-        Log.i(TAG, "onTodoSelected: view:" + view.getId());
-
-
         try {
             Log.i(TAG, "onTodoSelected: view context : "+ view.getContext());
             int id = Integer.parseInt(((TextView)view.findViewById(R.id.customScrollTodoId)).getText().toString());
@@ -94,13 +88,69 @@ public class TodoListActivity extends AppCompatActivity {
             intent.putExtra("dueDate", new Long(todo.getDueDate()));
 
             startActivity(intent);
-
         } catch (ClassCastException cce) {
             Log.e(TAG, "onTodoSelected: expected id of type int in tag.", cce);
             return;
         } catch(NullPointerException npe) {
             Log.e(TAG, "onTodoSelected: Could not retrieve intent values.", npe);
             return;
+        }
+    }
+
+    private void displayTodosFromCSE(List<CustomScrollElement> todos) {
+
+    }
+
+    private void displayTodosFromTodo(List<Todo> todos){
+        List<CustomScrollElement> customScrollElements = convertToCSE(todos);
+        for (CustomScrollElement c : customScrollElements) {
+            scrollLayout.addView(c);
+        }
+    }
+
+    private List<CustomScrollElement> convertToCSE(List<Todo> todos) {
+        List<CustomScrollElement> list = new ArrayList<>();
+        for (Todo t : todos) {
+            list.add(new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.getId()));
+        }
+        return list;
+    }
+
+    /**
+     * Cleares all todos on the server and pushes the local todos.
+     */
+    public class RemoteTodoPusher extends AsyncTask<Todo, Void, Boolean> {
+        private final String TAG = "TodoPusher";
+
+        @Override
+        protected Boolean doInBackground(Todo... todos) {
+            WebOperator webOperator = new WebOperator();
+            webOperator.deleteAllTodos();
+            return webOperator.createTodos(Arrays.asList(todos));
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Log.i(TAG, "onPostExecute: Returned :" + result);
+        }
+    }
+
+    public class LocalTodoGetter extends AsyncTask<Context, Void, List<Todo>> {
+
+        @Override
+        protected List<Todo> doInBackground(Context... contexts) {
+
+            return AppDatabase.getInstance(contexts[0]).todoDao().getAll();
+        }
+
+        @Override
+        protected void onPostExecute(List<Todo> inTodos) {
+            super.onPostExecute(inTodos);
+            todos = inTodos;
+            displayTodosFromTodo(inTodos);
+
+            new RemoteTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
         }
     }
 
