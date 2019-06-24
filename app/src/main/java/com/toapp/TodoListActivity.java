@@ -127,7 +127,7 @@ public class TodoListActivity extends AppCompatActivity {
                 new RemoteTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
             } else {
                 // if there was no initial sync yet and there are no local todos we have to do a pull
-                //TODO: Implement RemoteTodoPuller and call here !
+                new RemoteTodoPuller().execute();
             }
             initSync = false;
         }
@@ -153,11 +153,25 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    public class RemoteTodoPuller extends AsyncTask<Void, Void, List<Todo>> {
+
+        @Override
+        protected List<Todo> doInBackground(Void... voids) {
+            return new WebOperator().readAllTodos();
+        }
+
+        @Override
+        protected void onPostExecute(List<Todo> inTodos) {
+            super.onPostExecute(inTodos);
+            todos = inTodos;
+            displayTodosFromTodo(inTodos);
+        }
+    }
+
     public class LocalTodoGetter extends AsyncTask<Context, Void, List<Todo>> {
 
         @Override
         protected List<Todo> doInBackground(Context... contexts) {
-
             return AppDatabase.getInstance(contexts[0]).todoDao().getAll();
         }
 
