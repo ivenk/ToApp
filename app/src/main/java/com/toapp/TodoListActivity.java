@@ -28,6 +28,7 @@ import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
     private final String TAG = "TodoListActivity";
+    private boolean initSync = true;
 
     private List<Todo> todos;
     ViewGroup scrollLayout;
@@ -116,6 +117,22 @@ public class TodoListActivity extends AppCompatActivity {
         return list;
     }
 
+
+    private void onLocalTodoGetterCompletion () {
+
+        // does the initial sync if need by running the remote pusher
+        if(initSync) {
+            // we do not sync if there are no local todos
+            if(todos.size() != 0) {
+                new RemoteTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
+            } else {
+                // if there was no initial sync yet and there are no local todos we have to do a pull
+                //TODO: Implement RemoteTodoPuller and call here !
+            }
+            initSync = false;
+        }
+    }
+
     /**
      * Cleares all todos on the server and pushes the local todos.
      */
@@ -149,8 +166,7 @@ public class TodoListActivity extends AppCompatActivity {
             super.onPostExecute(inTodos);
             todos = inTodos;
             displayTodosFromTodo(inTodos);
-
-            new RemoteTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
+            onLocalTodoGetterCompletion();
         }
     }
 
