@@ -14,7 +14,7 @@ import org.json.JSONObject;
 /** Data object to represent a "to do". Just for data storage */
 
 @Entity
-public class Todo implements IJsonable{
+public class Todo implements IJsonable, IJSONBuildable {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "name")
@@ -44,6 +44,21 @@ public class Todo implements IJsonable{
         this.done = done;
         this.favourite = favourite;
         this.dueDate = dueDate;
+    }
+
+    // this might be a bad practice ...
+    @Ignore
+    public Todo(JSONObject jsonObject) {
+        try {
+            this.id = jsonObject.getInt("id");
+            this.name = jsonObject.getString("name");
+            this.description = jsonObject.getString("description");
+            this.dueDate = jsonObject.getLong("expiry"); // Due to naming convention on server side
+            this.done = jsonObject.getBoolean("done");
+            this.favourite = jsonObject.getBoolean("favourite");
+        } catch (JSONException jse) {
+            Log.e("Todo", "Todo: Todo could not be build due to JSONException.", jse);
+        }
     }
 
     public int getId() {
