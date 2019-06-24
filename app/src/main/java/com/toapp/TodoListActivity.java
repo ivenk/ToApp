@@ -52,10 +52,6 @@ public class TodoListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO: check with web
-        //    tdos = new ArrayList<>();
-        //TODO : Think about mutli threading
-
         // not super sure why viewgroup instead of linear layout
         scrollLayout = findViewById(R.id.scroll_layout);
         // remove all children
@@ -81,6 +77,8 @@ public class TodoListActivity extends AppCompatActivity {
 
             // There might be a better way to do this
             Intent intent = new Intent(this, DetailTodoActivity.class);
+            intent.putExtra("todo", todo.toJSON().toString());
+
             intent.putExtra("id", todo.getId());
             intent.putExtra("name", todo.getName());
             intent.putExtra("description", todo.getDescription());

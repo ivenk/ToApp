@@ -21,6 +21,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 public class DetailTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -33,12 +36,7 @@ public class DetailTodoActivity extends AppCompatActivity implements DatePickerD
     private int time1;
     private int time2;
 
-    private int id;
-    private String name;
-    private String description;
-    private Boolean done;
-    private Boolean favourite;
-    private Long dueDate;
+    private Todo todo;
 
     private Boolean create;
 
@@ -61,24 +59,24 @@ public class DetailTodoActivity extends AppCompatActivity implements DatePickerD
         dateTimeUpdated = false;
 
         Intent intent = getIntent();
-        this.id = intent.getIntExtra("id", -1);
-        Log.i(TAG, "onCreate: id is : " + this.id);
-        if (this.id == -1) {
+        try {
+            String jsTodo = intent.getStringExtra("todo");
+            if (jsTodo != null)
+                todo = new Todo(new JSONObject(jsTodo));
+        } catch(JSONException jse) {
+            Log.e(TAG, "onCreate: JSONException occurred while trying to recreate the passed todo object", jse);
+        }
+
+        if (todo == null) {
             // if no id was given we assume no values passed and we are trying to create a new object instead of inspecting an existing one.
             create = true;
         } else {
-            this.name = intent.getStringExtra("name");
-            this.description = intent.getStringExtra("description");
-            this.done = intent.getBooleanExtra("done", false);
-            this.favourite = intent.getBooleanExtra("favourite", false);
-            this.dueDate = intent.getLongExtra("dueDate", -1);
-
-            ((TextView) findViewById(R.id.title_input_label)).setText(name);
-            ((TextView)findViewById(R.id.description_input_label)).setText(description);
-            ((Switch)findViewById(R.id.favourite_switch)).setChecked(favourite);
+            ((TextView) findViewById(R.id.title_input_label)).setText(todo.getName());
+            ((TextView)findViewById(R.id.description_input_label)).setText(todo.getDescription());
+            ((Switch)findViewById(R.id.favourite_switch)).setChecked(todo.isFavourite());
 
 
-            Date d = new Date(dueDate);
+            Date d = new Date(todo.getDueDate());
             ((TextView)findViewById(R.id.input_date)).setText("" + d.toString());
             ((TextView)findViewById(R.id.input_time)).setText("" + d.toString());
         }
@@ -128,7 +126,7 @@ public class DetailTodoActivity extends AppCompatActivity implements DatePickerD
             // if no new time and date is given we asume the old ones are correct.
             if (dateTimeUpdated) {
                 //TODO mind that only one might have been set !!!
-                dateTime = dueDate;
+                dateTime = todo.getDueDate();
             } else {
                 dateTime = new Date(date1, date2, date3, time1, time2).getTime();
             }
