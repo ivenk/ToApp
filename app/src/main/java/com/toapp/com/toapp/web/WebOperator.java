@@ -16,7 +16,11 @@ public class WebOperator implements WebAPI {
 
     @Override
     public boolean createTodos(List<Todo> todos) {
-        return false;
+        for (Todo t : todos) {
+            WebConnector webConnector = new WebConnector();
+            webConnector.createTodo(t.toJSON());
+        }
+        return true;
     }
 
     @Override

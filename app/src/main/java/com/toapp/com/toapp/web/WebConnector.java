@@ -26,20 +26,57 @@ class WebConnector{
     private final String TODOENPOINT = "todos";
     private final String USERENTPOINT = "users/auth";
 
-    public boolean createTodos(List<Todo> todos) {
+    public boolean createTodo(JSONObject todo) {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        OutputStreamWriter out = null;
+        try {
+            URL url = new URL(BASEURI + TODOENPOINT);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setDoOutput(true);
+            out = new OutputStreamWriter(
+                    urlConnection.getOutputStream());
+            out.write(todo.toString());
+            out.close();
+
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+        } catch(MalformedURLException mue) {
+            Log.e(TAG, "createTodo: MalformedURLException occured while trying to send todo to the server.", mue);
+        } catch (ProtocolException pe) {
+            Log.e(TAG, "createTodo: ProtocolException occured while trying to set up the request to send todo to the server.", pe);
+        } catch (IOException ioe) {
+            Log.e(TAG, "createTodo: IOException occured while trying to send todo to the server", ioe);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if(out != null) {
+                    out.close();
+                }
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            } catch (IOException ioe) {
+                Log.e(TAG, "createTodo: IOException occurred while trying to close bufferedreader", ioe);
+            }
+        }
         return false;
     }
 
     @Nullable
     public List<JSONObject> readAllTodos(){
         HttpURLConnection urlConnection = null;
+        InputStream in = null;
         try {
             URL url = new URL(BASEURI + TODOENPOINT);
             Log.i(TAG, "readAllTodos: connection url is " + url.toString());
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
 
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            in = new BufferedInputStream(urlConnection.getInputStream());
             return UnmarshallHelper.unmarshall(in);
         } catch (MalformedURLException mue) {
             Log.e(TAG, "readAllTodos: Malformed url !", mue);
@@ -48,23 +85,15 @@ class WebConnector{
         } finally {
             if(urlConnection != null)
                 urlConnection.disconnect();
+            try {
+                if(in != null) {
+                    in.close();
+                }
+            } catch (IOException ioe) {
+                Log.e(TAG, "readAllTodos: IOException occurred while trying to close input stream", ioe);
+            }
         }
         return null;
-    }
-
-    public Todo readTodo(int id) {
-        Log.e(TAG, "readTodo: Not yet implemented !");
-        return null;
-    }
-
-    public boolean updateTodo(int id, Todo newVersion) {
-        Log.e(TAG, "updateTodo: Not yet implemented !");
-        return false;
-    }
-
-    public boolean deleteTodo(int id) {
-        Log.e(TAG, "deleteTodo: Not yet implemented !");
-        return false;
     }
     
     public boolean deleteAllTodos() {
@@ -111,11 +140,8 @@ class WebConnector{
                     urlConnection.getOutputStream());
             out.write(userJSON.toString());
             out.close();
-            Log.w(TAG, "authenticateUser: Response code was : " + urlConnection.getResponseCode());
 
             reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-            Log.w(TAG, "authenticateUser: Response code was : " + urlConnection.getResponseCode());
             String result = reader.readLine(); // Result is supposed to be one line. If its more, something is wrong and we are not interested.
             return Boolean.parseBoolean(result);
         } catch(MalformedURLException mue) {
