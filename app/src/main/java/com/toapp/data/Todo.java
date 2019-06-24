@@ -1,15 +1,20 @@
 package com.toapp.data;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /** Data object to represent a "to do". Just for data storage */
 
 @Entity
-public class Todo {
+public class Todo implements IJsonable{
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "name")
@@ -67,5 +72,21 @@ public class Todo {
 
     public void setDueDate(long dueDate) {
         this.dueDate = dueDate;
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", id);
+            jsonObject.put("name", name);
+            jsonObject.put("description" , description);
+            jsonObject.put("done", done);
+            jsonObject.put("favourite", favourite);
+            jsonObject.put("expiry", dueDate); // Due to naming convention on server side
+        } catch (JSONException jse) {
+            Log.e("Todo", "toJSON: JSONException occured while trying to create JSON representation of todo", jse);
+        }
+        return jsonObject;
     }
 }
