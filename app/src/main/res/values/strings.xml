@@ -18,6 +18,8 @@
     <string name="invalid_password">Password must be 6 numbers</string>
     <string name="login_failed">Wrong email or password</string>
     <string name="authentication_progress">Verifying user ...</string>
+    <string name="update_button">Update</string>
+    <string name="delete_button">Delete</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
