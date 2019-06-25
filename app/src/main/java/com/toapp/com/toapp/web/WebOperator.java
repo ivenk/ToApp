@@ -67,4 +67,15 @@ public class WebOperator implements WebAPI {
         Log.i(TAG, "checkAvailability: returned " + b);
         return b;
     }
+
+    @Override
+    public boolean updateTodo(int id, Todo newVersion) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteTodo(int id) {
+        return false;
+    }
+
 }

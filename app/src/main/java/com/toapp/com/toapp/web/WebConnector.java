@@ -188,4 +188,69 @@ class WebConnector{
         }
         return false;
     }
+
+    public boolean updateTodo(int id, Todo newVersion) {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        OutputStreamWriter out = null;
+
+        try {
+            URL url = new URL(BASEURI + TODOENPOINT + "/" + id);//"http://10.0.2.2:9876");//BASEURI + TODOENPOINT);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("DELETE");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setDoOutput(true);
+            out = new OutputStreamWriter(
+                    urlConnection.getOutputStream());
+            out.write(newVersion.toJSON().toString());
+            out.close();
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            if(urlConnection.getResponseCode() == 200) {
+                return true;
+            }
+        } catch (MalformedURLException mue) {
+            Log.e(TAG, "updateTodo: MalFormdURLException occurred while trying to updateTodo todo with id " + id, mue);
+        } catch (ProtocolException pte) {
+            Log.e(TAG, "updateTodo: ProtocolException occurred while trying to updateTodo todo with id " + id, pte);
+        } catch (IOException ioe) {
+            Log.e(TAG, "updateTodo: IOException occurred while trying to updateTodo todo with id " + id, ioe);
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException ioe) {
+                Log.e(TAG, "deleteTodo: IOException occured while trying to close bufferedreader", ioe);
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteTodo(int id) {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        try {
+            URL url = new URL(BASEURI + TODOENPOINT + "/" + id);//"http://10.0.2.2:9876");//BASEURI + TODOENPOINT);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("DELETE");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            String result = reader.readLine(); // Result is supposed to be one line. If its more something is wrong and we are not interested.
+            return Boolean.parseBoolean(result);
+        } catch (MalformedURLException mue) {
+            Log.e(TAG, "deleteTodo: MalFormdURLException occurred while trying to delete todo with id " + id, mue);
+        } catch (ProtocolException pte) {
+            Log.e(TAG, "deleteTodo: ProtocolException occurred while trying to delete todo with id " + id, pte);
+        } catch (IOException ioe) {
+            Log.e(TAG, "deleteTodo: IOException occurred while trying to delete todo with id " + id, ioe);
+        } finally {
+            try {
+                if (reader != null)
+                    reader.close();
+            } catch (IOException ioe) {
+                Log.e(TAG, "deleteTodo: IOException occured while trying to close bufferedreader", ioe);
+            }
+        }
+        return false;
+    }
 }

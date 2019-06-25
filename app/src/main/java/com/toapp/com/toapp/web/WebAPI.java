@@ -13,14 +13,9 @@ public interface WebAPI {
     //GET api/todos
     List<Todo> readAllTodos();
 
-    //GET: api/todos
-  //  Todo readTodo(int id);
+    boolean updateTodo(int id, Todo newVersion);
 
- //   boolean updateTodo(int id, Todo newVersion);
-
- //   boolean deleteTodo(int id);
-
-    //boolean autenticateUser();
+    boolean deleteTodo(int id);
 
     boolean deleteAllTodos();
 
