@@ -190,6 +190,7 @@ class WebConnector{
     }
 
     public boolean updateTodo(int id, Todo newVersion) {
+        Log.i(TAG, "updateTodo: called !!!");
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         OutputStreamWriter out = null;
@@ -197,7 +198,7 @@ class WebConnector{
         try {
             URL url = new URL(BASEURI + TODOENPOINT + "/" + id);//"http://10.0.2.2:9876");//BASEURI + TODOENPOINT);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("DELETE");
+            urlConnection.setRequestMethod("PUT");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setDoOutput(true);
             out = new OutputStreamWriter(
@@ -218,6 +219,7 @@ class WebConnector{
         } catch (IOException ioe) {
             Log.e(TAG, "updateTodo: IOException occurred while trying to updateTodo todo with id " + id, ioe);
         } finally {
+            urlConnection.disconnect();
             try {
                 if (reader != null)
                     reader.close();
