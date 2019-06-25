@@ -3,6 +3,7 @@ package com.toapp;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.toapp.data.AppDatabase;
@@ -14,15 +15,11 @@ import androidx.fragment.app.DialogFragment;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -69,41 +66,32 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
-    //TODO : <-- Left off here !-->This needs to be adapted to only do the creation; lots of legacy code !
     public void onCreateButton(View view) {
-        //TODO get all infos from page
-        TextView titleView = findViewById(R.id.title_input_label);
-        TextView descriptionView = findViewById(R.id.description_input_label);
-        Switch favouriteView = findViewById(R.id.favourite_switch);
+        String title = ((TextView)findViewById(R.id.modify_title_input_label)).getText().toString();
+        String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
+        Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
 
-        if (titleView.getText().toString() == "") {
+        if (title == "") {
             Toast.makeText(getApplicationContext(), "Please provide a title for your todo !", Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(create) { // creation mode
-            // if crucial information was not provided no t..do will be created
-            if (!dateTimeUpdated) {
-                Toast.makeText(getApplicationContext(), "Please provide a date for your todo !", Toast.LENGTH_LONG).show();
-                return;
-            }
-            //TODO the date convertions dont work like this.
-            Log.i(TAG, "onCreateButton: Creation date set is : " + new Date(new Date(date1, date2, date3, time1, time2).toInstant().toEpochMilli()));
-
-            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), new Date(date1, date2, date3, time1, time2).getTime());
-            AppDatabase.getInstance(getApplicationContext()).todoDao().insert(t);
-        } else { // update mode
-            long dateTime;
-            // if no new time and date is given we asume the old ones are correct.
-            if (dateTimeUpdated) {
-                //TODO mind that only one might have been set !!!
-                dateTime = todo.getDueDate();
-            } else {
-                dateTime = new Date(date1, date2, date3, time1, time2).getTime();
-            }
-            Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), dateTime);
-            AppDatabase.getInstance(getApplicationContext()).todoDao().update(t);
+        // if crucial information was not provided no t..do will be created
+        if (!dateTimeUpdated) {
+            Toast.makeText(getApplicationContext(), "Please provide a date for your todo !", Toast.LENGTH_LONG).show();
+            return;
         }
+        //TODO the date convertions dont work like this.
+        Log.i(TAG, "onCreateButton: Creation date set is : " + new Date(new Date(date1, date2, date3, time1, time2).toInstant().toEpochMilli()));
+
+        Todo t = new Todo(title, description, false, favourite, new Date(date1, date2, date3, time1, time2).getTime());
+
+        new LocalTodoInserter().execute(t);
+        // todo transfer to server
+
+        Intent result = new Intent();
+        result.putExtra("todo", todo.toJSON().toString());
+        setResult(RESULT_OK, result);
 
         finish();
     }
@@ -130,6 +118,15 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         this.time2 = i1;
         //TODO improve time format
         ((TextView)findViewById(R.id.input_time)).setText("" + i + ":" + i1);
+    }
+
+    public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().insert(todos[0]);
+            return null;
+        }
     }
 
 }
