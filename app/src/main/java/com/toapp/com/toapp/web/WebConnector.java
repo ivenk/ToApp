@@ -190,7 +190,6 @@ class WebConnector{
     }
 
     public boolean updateTodo(int id, Todo newVersion) {
-        Log.i(TAG, "updateTodo: called !!!");
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         OutputStreamWriter out = null;

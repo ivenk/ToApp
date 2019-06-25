@@ -69,5 +69,13 @@
             android:paddingTop="20dp"
             android:text="@string/favourite_input_label" />
 
+        <Switch
+            android:id="@+id/modify_done_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:text="@string/done_label" />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
