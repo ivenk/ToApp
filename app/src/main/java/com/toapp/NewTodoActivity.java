@@ -55,36 +55,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("New Todo");
-        create = false;
-        dateTimeUpdated = false;
-
-        Intent intent = getIntent();
-        try {
-            String jsTodo = intent.getStringExtra("todo");
-            if (jsTodo != null)
-                todo = new Todo(new JSONObject(jsTodo));
-        } catch(JSONException jse) {
-            Log.e(TAG, "onCreate: JSONException occurred while trying to recreate the passed todo object", jse);
-        }
-
-        if (todo == null) {
-            // if no id was given we assume no values passed and we are trying to create a new object instead of inspecting an existing one.
-            create = true;
-        } else {
-            ((TextView) findViewById(R.id.title_input_label)).setText(todo.getName());
-            ((TextView)findViewById(R.id.description_input_label)).setText(todo.getDescription());
-            ((Switch)findViewById(R.id.favourite_switch)).setChecked(todo.isFavourite());
-
-
-            Date d = new Date(todo.getDueDate());
-            ((TextView)findViewById(R.id.input_date)).setText("" + d.toString());
-            ((TextView)findViewById(R.id.input_time)).setText("" + d.toString());
-        }
-
-        if(!create) {
-            //TODO String should be in a xml
-            ((Button)findViewById(R.id.create_button)).setText("Update");
-        }
     }
 
     public void onDateClicked(View view) {
@@ -99,6 +69,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
+    //TODO : <-- Left off here !-->This needs to be adapted to only do the creation; lots of legacy code !
     public void onCreateButton(View view) {
         //TODO get all infos from page
         TextView titleView = findViewById(R.id.title_input_label);
@@ -133,8 +104,10 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
             Todo t = new Todo(titleView.getText().toString(), descriptionView.getText().toString(), false, favouriteView.isChecked(), dateTime);
             AppDatabase.getInstance(getApplicationContext()).todoDao().update(t);
         }
+
         finish();
     }
+
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
