@@ -48,8 +48,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
     private int time1;
     private int time2;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +70,13 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
         if (todo == null) {
             Log.e(TAG, "onCreate: No todo to modify was given. Returning");
+            setResult(RESULT_FAIL);
             finish();
         } else {
             ((TextView) findViewById(R.id.modify_title_input_label)).setText(todo.getName());
             ((TextView)findViewById(R.id.modify_description_input_label)).setText(todo.getDescription());
             ((Switch)findViewById(R.id.modify_favourite_switch)).setChecked(todo.isFavourite());
-
+            ((Switch)findViewById(R.id.modify_done_switch)).setChecked(todo.isDone());
 
             Date d = new Date(todo.getDueDate());
             ((TextView)findViewById(R.id.modify_input_date)).setText("" + d.toString());
@@ -124,6 +123,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         String title = ((TextView)findViewById(R.id.modify_title_input_label)).getText().toString();
         String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
         Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
+        Boolean done = ((Switch)findViewById(R.id.modify_done_switch)).isChecked();
 
         long dateTime;
         if(timeUpdated || dateUpdated) {
@@ -133,7 +133,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             dateTime = todo.getDueDate();
         }
 
-        Todo newTodo = new Todo(todo.getId(),title, description, false, favourite, dateTime);
+        Todo newTodo = new Todo(todo.getId(),title, description, done, favourite, dateTime);
 
         new LocalTodoUpdater().execute(newTodo);
         Intent result = new Intent();
@@ -143,8 +143,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
     }
 
     public void onDeleteButton(View view) {
-        //TODO implement deletion local and remote
-        Log.i(TAG, "onDeleteButton: WIP");
         if (todo == null) {
             Log.e(TAG, "onDeleteButton: Something went wrong. todo should never be null");
             return;
