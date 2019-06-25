@@ -136,6 +136,12 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         finish();
     }
 
+    public void onDeleteButton(View view) {
+        //TODO implement deletion local and remote
+        Log.i(TAG, "onDeleteButton: WIP");
+
+    }
+
     public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
         @Override
         protected Void doInBackground(Todo... todos) {
