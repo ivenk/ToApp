@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DetailTodoActivity">
+    tools:context=".NewTodoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,13 +31,21 @@
             android:layout_height="0dp"
             android:layout_weight="8" />
 
-        <Button
-            android:id="@+id/create_button"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:onClick="onCreateButton"
-            android:text="@string/create_button_text" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/create_button"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="onCreateButton"
+                android:text="@string/create_button_text" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

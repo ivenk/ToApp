@@ -26,8 +26,8 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
-public class DetailTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private final String TAG = "DetailTodoActivity";
+public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private final String TAG = "NewTodoActivity";
 
     private int date1;
     private int date2;

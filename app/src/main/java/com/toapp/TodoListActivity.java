@@ -63,7 +63,7 @@ public class TodoListActivity extends AppCompatActivity {
     // gets called once the create_new_todo button is clicked
     public void onCreateNewTodo(View view) {
         // launch activity for creating todos
-        Intent intent = new Intent(this, DetailTodoActivity.class);
+        Intent intent = new Intent(this, NewTodoActivity.class);
         startActivity(intent);
     }
     
