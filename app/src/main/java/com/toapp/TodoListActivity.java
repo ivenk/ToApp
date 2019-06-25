@@ -29,6 +29,9 @@ import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
     private final String TAG = "TodoListActivity";
+    public final static int MODIFY = 1;
+    public final static int CREATE = 2;
+
     private boolean initSync = true;
 
     private List<Todo> todos;
@@ -64,7 +67,7 @@ public class TodoListActivity extends AppCompatActivity {
     public void onCreateNewTodo(View view) {
         // launch activity for creating todos
         Intent intent = new Intent(this, NewTodoActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, CREATE);
     }
     
     public void onTodoSelected(View view) {
@@ -109,7 +112,7 @@ public class TodoListActivity extends AppCompatActivity {
         if(initSync) {
             // we do not sync if there are no local todos
             if(todos.size() != 0) {
-                new RemoteTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
+                new RemoteInitTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
             } else {
                 // if there was no initial sync yet and there are no local todos we have to do a pull
                 new RemoteTodoPuller().execute();
@@ -126,15 +129,15 @@ public class TodoListActivity extends AppCompatActivity {
         // There might be a better way to do this
         Intent intent = new Intent(this, ModifyTodoActivity.class);
         intent.putExtra("todo", todo.toJSON().toString());
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, MODIFY);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult: called !!");
-        if(requestCode == 1) {
-            if(resultCode == RESULT_OK) {
+        if(requestCode == MODIFY) { // returning from detail view
+            if(resultCode == ModifyTodoActivity.RESULT_OK_UPDATE) {
                 if(data != null) {
                     try {
                         String str = data.getStringExtra("todo");
@@ -148,7 +151,39 @@ public class TodoListActivity extends AppCompatActivity {
                     } catch (JSONException jse) {
                         Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
                     }
-
+                }
+            } else if (resultCode == ModifyTodoActivity.RESULT_OK_DELETE) {
+                if(data != null) {
+                    try {
+                        String str = data.getStringExtra("todo");
+                    if(str == null) {
+                        Log.e(TAG, "onActivityResult: String with name: todo could not be retrieved from received intent");
+                        return;
+                    }
+                        Todo t = new Todo(new JSONObject(str));
+                        new RemoteSingleTodoDeleter().execute(t);
+                        Log.i(TAG, "onActivityResult: remote update started");
+                    } catch (JSONException jse) {
+                        Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
+                    }
+                }
+            } else if (resultCode == ModifyTodoActivity.RESULT_FAIL) {
+                Log.e(TAG, "onActivityResult: Result returned to from ModifyTodo activity is broken.");
+            }
+        } else if (requestCode == CREATE) { // returning from new todo activity
+            // do stuff
+            if(data != null) {
+                try {
+                    String str = data.getStringExtra("todo");
+                    if(str == null) {
+                        Log.e(TAG, "onActivityResult: String with name: todo could not be retrieved from received intent");
+                        return;
+                    }
+                    Todo t = new Todo(new JSONObject(str));
+                    new RemoteSingleTodoPusher().execute(t);
+                    Log.i(TAG, "onActivityResult: remote update started");
+                } catch (JSONException jse) {
+                    Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
                 }
             }
         }
@@ -157,7 +192,7 @@ public class TodoListActivity extends AppCompatActivity {
     /**
      * Cleares all todos on the server and pushes the local todos.
      */
-    public class RemoteTodoPusher extends AsyncTask<Todo, Void, Boolean> {
+    public class RemoteInitTodoPusher extends AsyncTask<Todo, Void, Boolean> {
         private final String TAG = "TodoPusher";
 
         @Override
@@ -236,4 +271,25 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    public class RemoteSingleTodoDeleter extends AsyncTask<Todo, Void, Void> {
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            Boolean success = new WebOperator().deleteTodo(todos[0].getId());
+            if (!success) {
+                Log.e(TAG, "doInBackground: todo " + todos[0].toJSON().toString() +" could not be deleted on server");
+            }
+            return null;
+        }
+    }
+
+    public class RemoteSingleTodoPusher extends AsyncTask<Todo, Void, Void> {
+        @Override
+        protected Void doInBackground(Todo... todos) {
+             Boolean success = new WebOperator().createTodos(Arrays.asList(todos));
+             if(!success) {
+                 Log.e(TAG, "doInBackground: todo " + todos[0].toJSON().toString() + "could not be created on server.");
+             }
+             return null;
+        }
+    }
 }
