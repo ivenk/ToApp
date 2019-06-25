@@ -208,6 +208,8 @@ class WebConnector{
 
             if(urlConnection.getResponseCode() == 200) {
                 return true;
+            } else {
+                Log.e(TAG, "updateTodo: updaet failed for todo: " + newVersion.toJSON().toString() + " response code was " + urlConnection.getResponseCode());
             }
         } catch (MalformedURLException mue) {
             Log.e(TAG, "updateTodo: MalFormdURLException occurred while trying to updateTodo todo with id " + id, mue);
