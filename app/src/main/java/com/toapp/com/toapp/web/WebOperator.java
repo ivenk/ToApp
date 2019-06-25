@@ -70,12 +70,12 @@ public class WebOperator implements WebAPI {
 
     @Override
     public boolean updateTodo(int id, Todo newVersion) {
-        return false;
+        return new WebConnector().updateTodo(id, newVersion);
     }
 
     @Override
     public boolean deleteTodo(int id) {
-        return false;
+        return new WebConnector().deleteTodo(id);
     }
 
 }
