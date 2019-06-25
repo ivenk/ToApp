@@ -67,9 +67,9 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     }
 
     public void onCreateButton(View view) {
-        String title = ((TextView)findViewById(R.id.modify_title_input_label)).getText().toString();
-        String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
-        Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
+        String title = ((TextView)findViewById(R.id.title_input_label)).getText().toString();
+        String description = ((TextView)findViewById(R.id.description_input_label)).getText().toString();
+        Boolean favourite = ((Switch)findViewById(R.id.favourite_switch)).isChecked();
 
         if (title == "") {
             Toast.makeText(getApplicationContext(), "Please provide a title for your todo !", Toast.LENGTH_LONG).show();
@@ -90,7 +90,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         // todo transfer to server
 
         Intent result = new Intent();
-        result.putExtra("todo", todo.toJSON().toString());
+        result.putExtra("todo", t.toJSON().toString());
         setResult(RESULT_OK, result);
 
         finish();
