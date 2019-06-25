@@ -254,20 +254,18 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-    public class RemoteTodoUpdater extends AsyncTask<Todo, Void, Boolean> {
+    public class RemoteTodoUpdater extends AsyncTask<Todo, Void, Void> {
         private Todo todo;
 
         @Override
-        protected Boolean doInBackground(Todo... newTodos) {
+        protected Void doInBackground(Todo... newTodos) {
             this.todo = newTodos[0];
             // the id is from the t..do belonging to the surrounding class, the second one is newly created.
-            return new WebOperator().updateTodo(todo.getId(), todo);
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            Log.e(TAG, "onPostExecute: RemoteTodoUpdater returned " + aBoolean + " while trying to update todo : " + todo.toJSON().toString());
+            Boolean success = new WebOperator().updateTodo(todo.getId(), todo);
+            if(!success) {
+                Log.e(TAG, "doInBackground: todo: " + newTodos[0].toJSON().toString() + " could not be updated on server side");
+            }
+            return null;
         }
     }
 
