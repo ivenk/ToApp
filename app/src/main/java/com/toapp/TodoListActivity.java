@@ -50,16 +50,13 @@ public class TodoListActivity extends AppCompatActivity {
         if(!online) {
             Toast.makeText(this, "There seems to be no connection to the internet. Working offline ...", Toast.LENGTH_LONG).show();
         }
+
+        scrollLayout = findViewById(R.id.scroll_layout);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // not super sure why viewgroup instead of linear layout
-        scrollLayout = findViewById(R.id.scroll_layout);
-        // remove all children
-        scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
-
         new LocalShowAllTodos().execute();
     }
 
@@ -92,6 +89,7 @@ public class TodoListActivity extends AppCompatActivity {
 
     private void displayTodosFromTodo(List<Todo> todos){
         List<CustomScrollElement> customScrollElements = convertToCSE(todos);
+        scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
         for (CustomScrollElement c : customScrollElements) {
             scrollLayout.addView(c);
         }
@@ -100,7 +98,7 @@ public class TodoListActivity extends AppCompatActivity {
     private List<CustomScrollElement> convertToCSE(List<Todo> todos) {
         List<CustomScrollElement> list = new ArrayList<>();
         for (Todo t : todos) {
-            list.add(new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.getId()));
+            list.add(new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.isDone(), t.getId()));
         }
         return list;
     }
