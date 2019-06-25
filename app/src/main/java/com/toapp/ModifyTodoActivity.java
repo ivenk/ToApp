@@ -31,6 +31,11 @@ import java.util.Date;
 public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private final String TAG = "ModifyTodoActivity";
 
+    public final static int RESULT_OK_DELETE = 5;
+    public final static int RESULT_OK_UPDATE = 6;
+    public final static int RESULT_FAIL = 7;
+
+
     private boolean dateUpdated;
     private boolean timeUpdated;
 
@@ -42,6 +47,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
     private int time1;
     private int time2;
+
 
 
     @Override
@@ -132,20 +138,37 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         new LocalTodoUpdater().execute(newTodo);
         Intent result = new Intent();
         result.putExtra("todo", newTodo.toJSON().toString());
-        setResult(RESULT_OK, result);
+        setResult(RESULT_OK_UPDATE, result);
         finish();
     }
 
     public void onDeleteButton(View view) {
         //TODO implement deletion local and remote
         Log.i(TAG, "onDeleteButton: WIP");
+        if (todo == null) {
+            Log.e(TAG, "onDeleteButton: Something went wrong. todo should never be null");
+            return;
+        }
+        new LocalTodoDeleter().execute(todo);
 
+        Intent result = new Intent();
+        result.putExtra("todo", todo.toJSON().toString());
+        setResult(RESULT_OK_DELETE, result);
+        finish();
     }
 
     public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
         @Override
         protected Void doInBackground(Todo... todos) {
             AppDatabase.getInstance(getApplicationContext()).todoDao().update(todos[0]);
+            return null;
+        }
+    }
+
+    public class LocalTodoDeleter extends AsyncTask<Todo, Void, Void> {
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
             return null;
         }
     }
