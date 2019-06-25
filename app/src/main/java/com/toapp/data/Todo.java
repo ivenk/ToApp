@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Data object to represent a "to do". Just for data storage */
-
 @Entity
 public class Todo implements IJsonable, IJSONBuildable {
     @PrimaryKey(autoGenerate = true)
