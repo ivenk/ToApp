@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
@@ -48,7 +47,6 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -72,20 +70,14 @@ public class TodoListActivity extends AppCompatActivity {
             Log.i(TAG, "onTodoSelected: view context : "+ view.getContext());
             int id = Integer.parseInt(((TextView)view.findViewById(R.id.customScrollTodoId)).getText().toString());
 
+            //TODO: Left off here <-- Improve this with asynctask
+
             AppDatabase db = AppDatabase.getInstance(this);
             Todo todo = db.todoDao().getById(id);
 
             // There might be a better way to do this
             Intent intent = new Intent(this, DetailTodoActivity.class);
             intent.putExtra("todo", todo.toJSON().toString());
-
-            intent.putExtra("id", todo.getId());
-            intent.putExtra("name", todo.getName());
-            intent.putExtra("description", todo.getDescription());
-            intent.putExtra("done", todo.isDone());
-            intent.putExtra("favourite", todo.isFavourite());
-            intent.putExtra("dueDate", new Long(todo.getDueDate()));
-
             startActivity(intent);
         } catch (ClassCastException cce) {
             Log.e(TAG, "onTodoSelected: expected id of type int in tag.", cce);
@@ -166,6 +158,7 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    // TODO : might be able to drop context from param
     public class LocalTodoGetter extends AsyncTask<Context, Void, List<Todo>> {
 
         @Override
