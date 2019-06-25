@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +19,9 @@ import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
 
-import java.lang.reflect.Array;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -55,7 +57,7 @@ public class TodoListActivity extends AppCompatActivity {
         // remove all children
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
 
-        new LocalTodoGetter().execute(this);
+        new LocalShowAllTodos().execute();
     }
 
     // gets called once the create_new_todo button is clicked
@@ -70,15 +72,8 @@ public class TodoListActivity extends AppCompatActivity {
             Log.i(TAG, "onTodoSelected: view context : "+ view.getContext());
             int id = Integer.parseInt(((TextView)view.findViewById(R.id.customScrollTodoId)).getText().toString());
 
-            //TODO: Left off here <-- Improve this with asynctask
+            new LocalSelectTodo().execute(id);
 
-            AppDatabase db = AppDatabase.getInstance(this);
-            Todo todo = db.todoDao().getById(id);
-
-            // There might be a better way to do this
-            Intent intent = new Intent(this, DetailTodoActivity.class);
-            intent.putExtra("todo", todo.toJSON().toString());
-            startActivity(intent);
         } catch (ClassCastException cce) {
             Log.e(TAG, "onTodoSelected: expected id of type int in tag.", cce);
             return;
@@ -123,6 +118,42 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    private Context giveContext() {
+        return this;
+    }
+
+    private void startDetailView(Todo todo) {
+        // There might be a better way to do this
+        Intent intent = new Intent(this, ModifyTodoActivity.class);
+        intent.putExtra("todo", todo.toJSON().toString());
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult: called !!");
+        if(requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                if(data != null) {
+                    try {
+                        String str = data.getStringExtra("todo");
+                        if(str == null) {
+                            Log.e(TAG, "onActivityResult: String with name: todo could not be retrieved from received intent");
+                            return;
+                        }
+                        Todo t = new Todo(new JSONObject(str));
+                        new RemoteTodoUpdater().execute(t);
+                        Log.i(TAG, "onActivityResult: remote update started");
+                    } catch (JSONException jse) {
+                        Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
+                    }
+
+                }
+            }
+        }
+    }
+
     /**
      * Cleares all todos on the server and pushes the local todos.
      */
@@ -158,12 +189,11 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-    // TODO : might be able to drop context from param
-    public class LocalTodoGetter extends AsyncTask<Context, Void, List<Todo>> {
+    public class LocalShowAllTodos extends AsyncTask<Void, Void, List<Todo>> {
 
         @Override
-        protected List<Todo> doInBackground(Context... contexts) {
-            return AppDatabase.getInstance(contexts[0]).todoDao().getAll();
+        protected List<Todo> doInBackground(Void... voids) {
+            return AppDatabase.getInstance(giveContext()).todoDao().getAll();
         }
 
         @Override
@@ -172,6 +202,37 @@ public class TodoListActivity extends AppCompatActivity {
             todos = inTodos;
             displayTodosFromTodo(inTodos);
             onLocalTodoGetterCompletion();
+        }
+    }
+
+    public class LocalSelectTodo extends AsyncTask<Integer, Void, Todo> {
+
+        @Override
+        protected Todo doInBackground(Integer... ids) {
+            return AppDatabase.getInstance(giveContext()).todoDao().getById(ids[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Todo todo) {
+            super.onPostExecute(todo);
+            startDetailView(todo);
+        }
+    }
+
+    public class RemoteTodoUpdater extends AsyncTask<Todo, Void, Boolean> {
+        private Todo todo;
+
+        @Override
+        protected Boolean doInBackground(Todo... newTodos) {
+            this.todo = newTodos[0];
+            // the id is from the t..do belonging to the surrounding class, the second one is newly created.
+            return new WebOperator().updateTodo(todo.getId(), todo);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            Log.e(TAG, "onPostExecute: RemoteTodoUpdater returned " + aBoolean + " while trying to update todo : " + todo.toJSON().toString());
         }
     }
 
