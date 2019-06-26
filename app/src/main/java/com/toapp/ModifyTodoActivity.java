@@ -1,7 +1,9 @@
 package com.toapp;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +30,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 
-public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
     private final String TAG = "ModifyTodoActivity";
 
     public final static int RESULT_OK_DELETE = 5;
@@ -147,12 +149,27 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             Log.e(TAG, "onDeleteButton: Something went wrong. todo should never be null");
             return;
         }
-        new LocalTodoDeleter().execute(todo);
-
-        Intent result = new Intent();
-        result.putExtra("todo", todo.toJSON().toString());
-        setResult(RESULT_OK_DELETE, result);
-        finish();
+        // show confirmation dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                new LocalTodoDeleter().execute(todo);
+                Intent result = new Intent();
+                result.putExtra("todo", todo.toJSON().toString());
+                setResult(RESULT_OK_DELETE, result);
+                finish();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.i(TAG, "onClick: Deletion event was cancelled.");
+            }
+        });
+        builder.setMessage("Are you sure ?");
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
