@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 
 /**
@@ -19,7 +22,7 @@ import android.view.ViewGroup;
  * Use the {@link ContactScroller#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactScroller extends Fragment {
+public class ContactScroller extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,6 +34,9 @@ public class ContactScroller extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private Button addButton;
+    private ScrollView scrollView;
+    private LinearLayout linearLayout;
 
     public ContactScroller() {
         // Required empty public constructor
@@ -68,14 +74,13 @@ public class ContactScroller extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_contact_picker, container, false);
-    }
+        View view = inflater.inflate(R.layout.fragment_contact_picker, container, false);
+        addButton = view.findViewById(R.id.add_contact);
+        addButton.setOnClickListener(this);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        scrollView =view.findViewById(R.id.contact_scroll_view);
+        linearLayout = scrollView.findViewById(R.id.contact_scrollable_linear);
+        return view;
     }
 
     @Override
@@ -95,6 +100,13 @@ public class ContactScroller extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View view) {
+        if(view == addButton) {
+            mListener.startContactPicker();
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -106,7 +118,11 @@ public class ContactScroller extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+        void startContactPicker();
+    }
+
+    public void attachNewContact() {
+
     }
 }
