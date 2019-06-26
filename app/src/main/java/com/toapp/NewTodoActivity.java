@@ -87,7 +87,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Todo t = new Todo(title, description, false, favourite, new Date(date1, date2, date3, time1, time2).getTime());
 
         new LocalTodoInserter().execute(t);
-        // todo transfer to server
 
         Intent result = new Intent();
         result.putExtra("todo", t.toJSON().toString());
