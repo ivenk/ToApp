@@ -3,16 +3,19 @@ package com.toapp;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -23,8 +26,9 @@ import android.widget.Toast;
 
 import java.util.Date;
 
-public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener {
     private final String TAG = "NewTodoActivity";
+    private final int CONTACT_PICKER = 1;
 
     private int date1;
     private int date2;
@@ -117,6 +121,24 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         this.time2 = i1;
         //TODO improve time format
         ((TextView)findViewById(R.id.input_time)).setText("" + i + ":" + i1);
+    }
+
+    public void onContactsClicked(View view) {
+        Log.i(TAG, "onContactsClicked: Contacts button pressed !");
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, CONTACT_PICKER);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.i(TAG, "onFragmentInteraction: called !!");
     }
 
     public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
