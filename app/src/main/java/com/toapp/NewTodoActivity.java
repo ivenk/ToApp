@@ -1,8 +1,10 @@
 package com.toapp;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -43,6 +46,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     //TODO still some buggs here! What if we only want to change the time not the date in update ? will not work currently.
     private boolean dateTimeUpdated;
+    private ContactScroller contactScroller;
 
     // TODO: Change the view. The activity_new_todo.xml currently includes hardcoded width for the <include> element
 
@@ -56,6 +60,11 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("New Todo");
+
+        this.contactScroller = (ContactScroller) getSupportFragmentManager().findFragmentById(R.id.contact_list_outer);
+        if(this.contactScroller == null){
+            Log.e(TAG, "onCreate: ContactScroller fragment could not be located.");
+        }
     }
 
     public void onDateClicked(View view) {
@@ -123,22 +132,32 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         ((TextView)findViewById(R.id.input_time)).setText("" + i + ":" + i1);
     }
 
-    public void onContactsClicked(View view) {
-        Log.i(TAG, "onContactsClicked: Contacts button pressed !");
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, CONTACT_PICKER);
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == CONTACT_PICKER) {
+            if(resultCode == Activity.RESULT_OK) {
+                Uri d = data.getData();
+                Cursor cursor = managedQuery(d, null, null, null, null);
+
+                if(cursor.moveToFirst()){
+                    String id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                }
+                Log.i(TAG, "onActivityResult: categories :" + data.getCategories());
+                Log.i(TAG, "onActivityResult: data : " + data.getDataString());
+                Log.i(TAG, "onActivityResult: received data : " + d.describeContents());
+            }
+        }
+
+
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        Log.i(TAG, "onFragmentInteraction: called !!");
+    public void startContactPicker() {
+        Log.i(TAG, "startContactPicker: called from fragment !");
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, CONTACT_PICKER);
     }
 
     public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
