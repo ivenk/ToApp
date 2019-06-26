@@ -21,6 +21,9 @@
     <string name="update_button">Update</string>
     <string name="delete_button">Delete</string>
     <string name="done_label">Done</string>
+    <string name="remove_contact">Remove</string>
+    <string name="add_contact">Add</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
