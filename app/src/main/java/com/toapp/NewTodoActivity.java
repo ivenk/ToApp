@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.toapp.data.AppDatabase;
+import com.toapp.data.Contact;
 import com.toapp.data.Todo;
 
 import androidx.annotation.Nullable;
@@ -139,14 +140,36 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         if (requestCode == CONTACT_PICKER) {
             if(resultCode == Activity.RESULT_OK) {
                 Uri d = data.getData();
-                Cursor cursor = managedQuery(d, null, null, null, null);
+                Cursor cursor = getContentResolver().query(d, null, null, null, null); //managedQuery(d, null, null, null, null);
 
                 if(cursor.moveToFirst()){
-                    String id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                    int id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID)));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+                    String hasPhone = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                    String number = "";
+
+                    if (hasPhone.equalsIgnoreCase("1")) {
+                        Cursor phones = getContentResolver().query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
+                                null, null);
+                        phones.moveToFirst();
+                        number = phones.getString(phones.getColumnIndex("data1"));
+
+
+                    }
+                    String email = "";
+                    Cursor mailCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID, null, null);
+                    mailCursor.moveToFirst();
+                    email = getString(mailCursor.getColumnIndex("data1"));
+
+                    Log.i(TAG, "onActivityResult: id : " + id);
+                    Log.i(TAG, "onActivityResult: name : " + name);
+                    Log.i(TAG, "onActivityResult: number : " + number);
+                    Log.i(TAG, "onActivityResult: email : " + email);
+                    contactScroller.attachNewContact(new Contact(id, name, number, email));
+
                 }
-                Log.i(TAG, "onActivityResult: categories :" + data.getCategories());
-                Log.i(TAG, "onActivityResult: data : " + data.getDataString());
-                Log.i(TAG, "onActivityResult: received data : " + d.describeContents());
             }
         }
     }
