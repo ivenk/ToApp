@@ -134,6 +134,4 @@ public class Todo implements IJsonable, IJSONBuildable {
         }
         return jsonObject;
     }
-
-    //TODO: Strange bug occurres when trying to add 2 contacts to a todo. THe ids will be added together like 1 and 2 will be 12.
 }

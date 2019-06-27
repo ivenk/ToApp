@@ -140,6 +140,19 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
         showContacts();
     }
 
+    public String getContactsString() {
+        String result = "";
+
+        for (int i = 0; i < contacts.size(); i++){
+            Contact c = contacts.get(i);
+            result += c.getId();
+            if(i != (contacts.size()-1)) { // always add , except for the last value
+                result += ",";
+            }
+        }
+        return result;
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
