@@ -5,8 +5,10 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
@@ -20,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
 import com.toapp.data.AppDatabase;
+import com.toapp.data.Contact;
 import com.toapp.data.Todo;
 
 import org.json.JSONException;
@@ -28,9 +31,10 @@ import org.json.JSONObject;
 import java.util.Date;
 
 
-public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
+public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener {
     private final String TAG = "ModifyTodoActivity";
 
+    private final int CONTACT_PICKER = 1;
     public final static int RESULT_OK_DELETE = 5;
     public final static int RESULT_OK_UPDATE = 6;
     public final static int RESULT_FAIL = 7;
@@ -47,6 +51,9 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
     private int time1;
     private int time2;
+
+    private ContactScroller contactScroller;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +75,11 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             Log.e(TAG, "onCreate: JSONException occurred while trying to recreate the passed todo object", jse);
         }
 
+        this.contactScroller = (ContactScroller) getSupportFragmentManager().findFragmentById(R.id.modify_contact_list_outer);
+        if(this.contactScroller == null){
+            Log.e(TAG, "onCreate: ContactScroller fragment could not be located.");
+        }
+
         if (todo == null) {
             Log.e(TAG, "onCreate: No todo to modify was given. Returning");
             setResult(RESULT_FAIL);
@@ -81,7 +93,16 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             Date d = new Date(todo.getDueDate());
             ((TextView)findViewById(R.id.modify_input_date)).setText("" + d.toString());
             ((TextView)findViewById(R.id.modify_input_time)).setText("" + d.toString());
+
+            if(todo.getContacts() != null) {
+                // fill contactScroller
+                for (String str: todo.getContacts().split(",")) {
+                    contactScroller.attachNewContact(queryContactResolver(Integer.parseInt(str)));
+                }
+            }
         }
+
+        PermissionRequester.CheckPermissions(this);
     }
 
     public void onDateClicked(View view) {
@@ -171,6 +192,13 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         dialog.show();
     }
 
+    @Override
+    public void startContactPicker() {
+        Log.i(TAG, "startContactPicker: called from fragment !");
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, CONTACT_PICKER);
+    }
+
     public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
         @Override
         protected Void doInBackground(Todo... todos) {
@@ -185,5 +213,34 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
             return null;
         }
+    }
+
+    private Contact queryContactResolver(int contactId) {
+        Log.i(TAG, "queryContactResolver: Trying to find information for contact with id : " + contactId);
+        Contact contact = new Contact();
+        Cursor query = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, ContactsContract.Contacts._ID + " = ?", new String[]{Integer.toString(contactId)}, null);
+        if(query.moveToFirst()) {
+            contact.setId(contactId);
+
+            String name = query.getString(query.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+            contact.setName(name);
+
+            String hasPhone = query.getString(query.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+            String number = "";
+
+            if (hasPhone.equalsIgnoreCase("1")) {
+                Cursor phones = getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
+                        null, null);
+                phones.moveToFirst();
+                number = phones.getString(phones.getColumnIndex("data1"));
+            }
+
+            contact.setNumber(number);
+            contact.setEmail("");
+        }
+        return contact;
+
     }
 }
