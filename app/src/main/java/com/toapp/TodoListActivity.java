@@ -218,6 +218,7 @@ public class TodoListActivity extends AppCompatActivity {
         protected void onPostExecute(List<Todo> inTodos) {
             super.onPostExecute(inTodos);
             todos = inTodos;
+            new LocalTodoPusher().execute(inTodos.toArray(new Todo[inTodos.size()]));
             displayTodosFromTodo(inTodos);
         }
     }
@@ -248,6 +249,10 @@ public class TodoListActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Todo todo) {
             super.onPostExecute(todo);
+            if(todo == null) {
+                Log.e(TAG, "onPostExecute: Clicked todo could not be retrieved from database.");
+                return;
+            }
             startDetailView(todo);
         }
     }
@@ -286,6 +291,17 @@ public class TodoListActivity extends AppCompatActivity {
                  Log.e(TAG, "doInBackground: todo " + todos[0].toJSON().toString() + "could not be created on server.");
              }
              return null;
+        }
+    }
+
+    public class LocalTodoPusher extends AsyncTask<Todo, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            for (Todo t: todos) {
+                AppDatabase.getInstance(giveContext()).todoDao().insert(t);
+            }
+            return null;
         }
     }
 }
