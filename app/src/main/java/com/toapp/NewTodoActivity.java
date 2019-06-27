@@ -41,8 +41,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     private final String TAG = "NewTodoActivity";
     private final int CONTACT_PICKER = 1;
 
-    final private int REQUEST_MULTIPLE_PERMISSIONS = 124;
-
     private int date1;
     private int date2;
     private int date3;
@@ -74,7 +72,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
             Log.e(TAG, "onCreate: ContactScroller fragment could not be located.");
         }
 
-        CheckPermissions();
+        PermissionRequester.CheckPermissions(this);
     }
 
     public void onDateClicked(View view) {
@@ -182,7 +180,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
                     Log.i(TAG, "onActivityResult: number : " + number);
                     Log.i(TAG, "onActivityResult: email : " + email);
                     contactScroller.attachNewContact(new Contact(Integer.parseInt(id), name, number, email));
-
                 }
             }
         }
@@ -209,61 +206,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // most of this is shamelessly stolen from https://dzone.com/articles/access-all-contacts-using-content-provider-concept
-    // great article! difficult to find up to date guides.
-
-    private void CheckPermissions() {
-        List<String> permissionsNeeded = new ArrayList<String>();
-        final List<String> permissionsList = new ArrayList<String>();
-        if (!addPermission(permissionsList, Manifest.permission.READ_CONTACTS))
-            permissionsNeeded.add("Read Contacts");
-        if (!addPermission(permissionsList, Manifest.permission.WRITE_CONTACTS))
-            permissionsNeeded.add("Write Contacts");
-        if (permissionsList.size() > 0) {
-            if (permissionsNeeded.size() > 0) {
-                String message = "You need to grant access to " + permissionsNeeded.get(0);
-                for (int i = 1; i < permissionsNeeded.size(); i++)
-                    message = message + ", " + permissionsNeeded.get(i);
-                showMessageOKCancel(message,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                                        REQUEST_MULTIPLE_PERMISSIONS);
-                            }
-                        });
-                return;
-            }
-            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
-                    REQUEST_MULTIPLE_PERMISSIONS);
-            return;
-        }
-    }
-
-
-    private boolean addPermission(List<String> permissionsList, String permission)
-    {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
-        {
-            permissionsList.add(permission);
-            if (!shouldShowRequestPermissionRationale(permission)){
-                return false;
-
-                }
-            }
-        return true;
-    }
-
-
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(NewTodoActivity.this)
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
 
 
 }
