@@ -210,7 +210,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     }
 
     // ------------------------------------------------------------------------------------------------
-    // this whole part is shamelessly stolen from https://dzone.com/articles/access-all-contacts-using-content-provider-concept
+    // most of this is shamelessly stolen from https://dzone.com/articles/access-all-contacts-using-content-provider-concept
     // great article! difficult to find up to date guides.
 
     private void CheckPermissions() {
