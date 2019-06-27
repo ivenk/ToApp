@@ -8,6 +8,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,23 +27,27 @@ public class Todo implements IJsonable, IJSONBuildable {
     private boolean favourite;
     @ColumnInfo(name="date")
     private long dueDate;
+    @ColumnInfo(name="contacts")
+    private String contacts;
 
-    public Todo(int id, String name, String description, boolean done, boolean favourite, long dueDate) {
+    public Todo(int id, String name, String description, boolean done, boolean favourite, long dueDate, String contacts) {
         this.id = id;
         this.name =name;
         this.description = description;
         this.done = done;
         this.favourite = favourite;
         this.dueDate = dueDate;
+        this.contacts = contacts;
     }
 
     @Ignore
-    public Todo(String name, String description, boolean done, boolean favourite, long dueDate) {
+    public Todo(String name, String description, boolean done, boolean favourite, long dueDate, String contacts) {
         this.name = name;
         this.description = description;
         this.done = done;
         this.favourite = favourite;
         this.dueDate = dueDate;
+        this.contacts = contacts;
     }
 
     // this might be a bad practice ...
@@ -55,6 +60,18 @@ public class Todo implements IJsonable, IJSONBuildable {
             this.dueDate = jsonObject.getLong("expiry"); // Due to naming convention on server side
             this.done = jsonObject.getBoolean("done");
             this.favourite = jsonObject.getBoolean("favourite");
+
+            Object contacts = jsonObject.get("contacts");
+            String contacsStr = "";
+            if(contacts == null) {
+                Log.i("Todo", "Todo: contacts == null");
+            } else {
+                Log.i("Todo", "Todo: contacts to string : " + contacts.toString());
+                contacsStr = contacts.toString().replace("\"", "");
+                contacsStr = contacsStr.toString().replace("[", "");
+                contacsStr = contacsStr.toString().replace("]", "");
+            }
+            this.contacts = contacsStr;
         } catch (JSONException jse) {
             Log.e("Todo", "Todo: Todo could not be build due to JSONException.", jse);
         }
@@ -88,6 +105,14 @@ public class Todo implements IJsonable, IJSONBuildable {
         this.dueDate = dueDate;
     }
 
+    public String getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(String contacts) {
+        this.contacts = contacts;
+    }
+
     @Override
     public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
@@ -98,9 +123,17 @@ public class Todo implements IJsonable, IJSONBuildable {
             jsonObject.put("done", done);
             jsonObject.put("favourite", favourite);
             jsonObject.put("expiry", dueDate); // Due to naming convention on server side
+            JSONArray contactArray = new JSONArray();
+            for (String str : contacts.split(",")) {
+                Log.i("Todo", "toJSON: str : " + str);
+                contactArray.put(str);
+            }
+            jsonObject.put("contacts", contactArray);
         } catch (JSONException jse) {
             Log.e("Todo", "toJSON: JSONException occured while trying to create JSON representation of todo", jse);
         }
         return jsonObject;
     }
+
+    //TODO: Strange bug occurres when trying to add 2 contacts to a todo. THe ids will be added together like 1 and 2 will be 12.
 }
