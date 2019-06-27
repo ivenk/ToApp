@@ -1,9 +1,16 @@
 package com.toapp.data;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Represents a contact.
  */
-public class Contact {
+public class Contact implements IJsonable, IJSONBuildable {
+    private final String TAG ="Contact";
+
     private int id;
     private String name;
     private String number;
@@ -12,6 +19,19 @@ public class Contact {
     public Contact() {
 
     }
+
+    public Contact(JSONObject jsonObject) {
+        try {
+            this.id = jsonObject.getInt("id");
+            this.name = jsonObject.getString("name");
+            this.number = jsonObject.getString("number");
+            this.email = jsonObject.getString("email");
+        }catch(JSONException jse ){
+            Log.e(TAG, "Contact: JSONException occurred while trying to build contact from JSONObject " + jsonObject.toString(), jse);
+            return;
+        }
+    }
+
 
     public Contact(int id, String name, String number, String email) {
         this.id = id;
@@ -50,5 +70,20 @@ public class Contact {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", this.id);
+            jsonObject.put("name", this.name);
+            jsonObject.put("number", this.number);
+            jsonObject.put("email", this.email);
+        } catch (JSONException jse) {
+            Log.e(TAG, "toJSON: JSONException occurred while trying to parse contact " + this.toString() + " to JSON.");
+            return null;
+        }
+        return jsonObject;
     }
 }
