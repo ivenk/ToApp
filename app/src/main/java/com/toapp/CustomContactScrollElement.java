@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 public class CustomContactScrollElement extends LinearLayout {
 
-    public CustomContactScrollElement(Context context) {
+    public CustomContactScrollElement(Context context, int id, String name) {
         super(context);
         View view = inflate(context, R.layout.custom_contact_scroll_element, this);
 
         TextView text = view.findViewById(R.id.contact_name_detail);
-        Button removeButton = view.findViewById(R.id.remove_contact);
-
+        ((TextView) view.findViewById(R.id.custom_contact_scroll_id)).setText(Integer.toString(id));
+        text.setText(name);
     }
 
 
