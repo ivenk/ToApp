@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -129,10 +130,13 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void onContactDelete(View view) {
-        int id = Integer.parseInt(((TextView)view.findViewById(R.id.custom_contact_scroll_id)).getText().toString());
+    public void onContactDelete(int id) {
         Log.i(TAG, "onContactDelete: Trying to delete contact with id" + id);
-        contacts.remove(id);
+        for (Contact c: contacts) {
+            if(c.getId() == id) {
+                contacts.remove(c);
+            }
+        }
         showContacts();
     }
 
