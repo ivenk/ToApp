@@ -1,9 +1,14 @@
 package com.toapp;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,11 +33,15 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener {
+public class NewTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener, CustomContactScrollElement.IContactScrollListener {
     private final String TAG = "NewTodoActivity";
     private final int CONTACT_PICKER = 1;
+
+    final private int REQUEST_MULTIPLE_PERMISSIONS = 124;
 
     private int date1;
     private int date2;
@@ -51,8 +60,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     // TODO: Change the view. The activity_new_todo.xml currently includes hardcoded width for the <include> element
 
-    // TODO: need option to delete todo ! Mit seperater bestäntigung
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +73,8 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         if(this.contactScroller == null){
             Log.e(TAG, "onCreate: ContactScroller fragment could not be located.");
         }
+
+        CheckPermissions();
     }
 
     public void onDateClicked(View view) {
@@ -143,7 +152,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
                 Cursor cursor = getContentResolver().query(d, null, null, null, null); //managedQuery(d, null, null, null, null);
 
                 if(cursor.moveToFirst()){
-                    int id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID)));
+                    String id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
                     String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
                     String hasPhone = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
                     String number = "";
@@ -155,19 +164,23 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
                                 null, null);
                         phones.moveToFirst();
                         number = phones.getString(phones.getColumnIndex("data1"));
-
-
                     }
+
                     String email = "";
                     Cursor mailCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID, null, null);
                     mailCursor.moveToFirst();
-                    email = getString(mailCursor.getColumnIndex("data1"));
+                    try {
+                        email = getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    } catch (Exception e) {
+                        Log.e(TAG, "onActivityResult: We crashed trying to read mail", e);
+                        email = "";
+                    }
 
                     Log.i(TAG, "onActivityResult: id : " + id);
                     Log.i(TAG, "onActivityResult: name : " + name);
                     Log.i(TAG, "onActivityResult: number : " + number);
                     Log.i(TAG, "onActivityResult: email : " + email);
-                    contactScroller.attachNewContact(new Contact(id, name, number, email));
+                    contactScroller.attachNewContact(new Contact(Integer.parseInt(id), name, number, email));
 
                 }
             }
@@ -181,8 +194,9 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         startActivityForResult(intent, CONTACT_PICKER);
     }
 
-    public void onContactDelete(View view) {
-        contactScroller.onContactDelete(view);
+    @Override
+    public void onScrollableCall(int id) {
+        contactScroller.onContactDelete(id);
     }
 
     public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
@@ -193,5 +207,62 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
             return null;
         }
     }
+
+    // ------------------------------------------------------------------------------------------------
+    // this whole part is shamelessly stolen from https://dzone.com/articles/access-all-contacts-using-content-provider-concept
+    // great article! difficult to find up to date guides.
+
+    private void CheckPermissions() {
+        List<String> permissionsNeeded = new ArrayList<String>();
+        final List<String> permissionsList = new ArrayList<String>();
+        if (!addPermission(permissionsList, Manifest.permission.READ_CONTACTS))
+            permissionsNeeded.add("Read Contacts");
+        if (!addPermission(permissionsList, Manifest.permission.WRITE_CONTACTS))
+            permissionsNeeded.add("Write Contacts");
+        if (permissionsList.size() > 0) {
+            if (permissionsNeeded.size() > 0) {
+                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                for (int i = 1; i < permissionsNeeded.size(); i++)
+                    message = message + ", " + permissionsNeeded.get(i);
+                showMessageOKCancel(message,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                        REQUEST_MULTIPLE_PERMISSIONS);
+                            }
+                        });
+                return;
+            }
+            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                    REQUEST_MULTIPLE_PERMISSIONS);
+            return;
+        }
+    }
+
+
+    private boolean addPermission(List<String> permissionsList, String permission)
+    {
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+        {
+            permissionsList.add(permission);
+            if (!shouldShowRequestPermissionRationale(permission)){
+                return false;
+
+                }
+            }
+        return true;
+    }
+
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(NewTodoActivity.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
 
 }
