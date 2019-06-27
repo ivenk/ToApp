@@ -69,6 +69,10 @@
             android:paddingTop="20dp"
             android:text="@string/favourite_input_label" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
         <fragment
             android:id="@+id/contact_list_outer"
             android:name="com.toapp.ContactScroller"
