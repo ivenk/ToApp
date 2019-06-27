@@ -93,6 +93,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         String title = ((TextView)findViewById(R.id.title_input_label)).getText().toString();
         String description = ((TextView)findViewById(R.id.description_input_label)).getText().toString();
         Boolean favourite = ((Switch)findViewById(R.id.favourite_switch)).isChecked();
+        String contacts = contactScroller.getContactsString();
 
         if (title == "") {
             Toast.makeText(getApplicationContext(), "Please provide a title for your todo !", Toast.LENGTH_LONG).show();
@@ -107,7 +108,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         //TODO the date convertions dont work like this.
         Log.i(TAG, "onCreateButton: Creation date set is : " + new Date(new Date(date1, date2, date3, time1, time2).toInstant().toEpochMilli()));
 
-        Todo t = new Todo(title, description, false, favourite, new Date(date1, date2, date3, time1, time2).getTime());
+        Todo t = new Todo(title, description, false, favourite, new Date(date1, date2, date3, time1, time2).getTime(), contacts);
 
         new LocalTodoInserter().execute(t);
 

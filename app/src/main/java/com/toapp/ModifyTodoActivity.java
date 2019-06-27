@@ -9,18 +9,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
-import com.toapp.com.toapp.web.WebOperator;
 import com.toapp.data.AppDatabase;
 import com.toapp.data.Todo;
 
@@ -126,6 +124,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
         Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
         Boolean done = ((Switch)findViewById(R.id.modify_done_switch)).isChecked();
+        String contacts = "";
 
         long dateTime;
         if(timeUpdated || dateUpdated) {
@@ -135,7 +134,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             dateTime = todo.getDueDate();
         }
 
-        Todo newTodo = new Todo(todo.getId(),title, description, done, favourite, dateTime);
+        Todo newTodo = new Todo(todo.getId(),title, description, done, favourite, dateTime, contacts);
 
         new LocalTodoUpdater().execute(newTodo);
         Intent result = new Intent();
