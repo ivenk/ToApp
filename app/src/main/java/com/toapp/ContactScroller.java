@@ -6,12 +6,19 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.toapp.data.Contact;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -27,6 +34,7 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final String TAG = "ContactScroller";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -37,6 +45,8 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
     private Button addButton;
     private ScrollView scrollView;
     private LinearLayout linearLayout;
+
+    private List<Contact> contacts;
 
     public ContactScroller() {
         // Required empty public constructor
@@ -68,6 +78,8 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        contacts = new ArrayList<>();
+        //TODO add passed contacts
     }
 
     @Override
@@ -80,6 +92,8 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
 
         scrollView =view.findViewById(R.id.contact_scroll_view);
         linearLayout = scrollView.findViewById(R.id.contact_scrollable_linear);
+        showContacts();
+
         return view;
     }
 
@@ -107,8 +121,19 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void onContactDelete(View view) {
+    private void showContacts() {
+        Log.i(TAG, "showContacts: called !!!");
+        linearLayout.removeAllViews();
+        for(Contact c : contacts) {
+            linearLayout.addView(new CustomContactScrollElement((Context) mListener, c.getId(), c.getName()));
+        }
+    }
 
+    public void onContactDelete(View view) {
+        int id = Integer.parseInt(((TextView)view.findViewById(R.id.custom_contact_scroll_id)).getText().toString());
+        Log.i(TAG, "onContactDelete: Trying to delete contact with id" + id);
+        contacts.remove(id);
+        showContacts();
     }
 
     /**
@@ -126,7 +151,8 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
         void startContactPicker();
     }
 
-    public void attachNewContact() {
-
+    public void attachNewContact(Contact contact) {
+        this.contacts.add(contact);
+        showContacts();
     }
 }
