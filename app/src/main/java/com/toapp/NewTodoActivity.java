@@ -149,8 +149,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
                 Log.i(TAG, "onActivityResult: received data : " + d.describeContents());
             }
         }
-
-
     }
 
     @Override
@@ -158,6 +156,10 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Log.i(TAG, "startContactPicker: called from fragment !");
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(intent, CONTACT_PICKER);
+    }
+
+    public void onContactDelete(View view) {
+        contactScroller.onContactDelete(view);
     }
 
     public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
