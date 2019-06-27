@@ -81,7 +81,7 @@
             android:layout_height="20dp" />
 
         <fragment
-            android:id="@+id/fragment"
+            android:id="@+id/modify_contact_list_outer"
             android:name="com.toapp.ContactScroller"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
