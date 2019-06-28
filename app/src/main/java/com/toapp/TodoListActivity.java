@@ -53,12 +53,15 @@ public class TodoListActivity extends AppCompatActivity {
         }
 
         scrollLayout = findViewById(R.id.scroll_layout);
+
+        new LocalInitShowAllTodos().execute();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        new LocalInitShowAllTodos().execute();
+
+        displayTodosFromTodo(this.todos);
     }
 
     // gets called once the create_new_todo button is clicked
@@ -85,7 +88,10 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     private void displayTodosFromCSE(List<CustomScrollElement> todos) {
-
+        scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
+        for (CustomScrollElement c : todos) {
+            scrollLayout.addView(c);
+        }
     }
 
     private void displayTodosFromTodo(List<Todo> todos){
@@ -106,7 +112,6 @@ public class TodoListActivity extends AppCompatActivity {
 
 
     private void onLocalTodoGetterCompletion () {
-
         // does the initial sync if need by running the remote pusher
         if(initSync) {
             // we do not sync if there are no local todos
