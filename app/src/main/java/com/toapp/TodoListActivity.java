@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class TodoListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        new LocalShowAllTodos().execute();
+        new LocalInitShowAllTodos().execute();
     }
 
     // gets called once the create_new_todo button is clicked
@@ -144,7 +145,9 @@ public class TodoListActivity extends AppCompatActivity {
                             return;
                         }
                         Todo t = new Todo(new JSONObject(str));
-                        new RemoteTodoUpdater().execute(t);
+                        this.todos.add(t); // cash
+                        new LocalTodoUpdater().execute(t); // local db
+                        new RemoteTodoUpdater().execute(t); // remote db
                         Log.i(TAG, "onActivityResult: remote update started");
                     } catch (JSONException jse) {
                         Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
@@ -159,6 +162,8 @@ public class TodoListActivity extends AppCompatActivity {
                         return;
                     }
                         Todo t = new Todo(new JSONObject(str));
+                        this.todos.remove(t);
+                        new LocalTodoDeleter().execute(t);
                         new RemoteSingleTodoDeleter().execute(t);
                         Log.i(TAG, "onActivityResult: remote update started");
                     } catch (JSONException jse) {
@@ -178,6 +183,8 @@ public class TodoListActivity extends AppCompatActivity {
                         return;
                     }
                     Todo t = new Todo(new JSONObject(str));
+                    this.todos.add(t);
+                    new LocalTodoInserter().execute(t);
                     new RemoteSingleTodoPusher().execute(t);
                     Log.i(TAG, "onActivityResult: remote update started");
                 } catch (JSONException jse) {
@@ -223,11 +230,32 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-    public class LocalShowAllTodos extends AsyncTask<Void, Void, List<Todo>> {
+    public class TodoSorterDate extends AsyncTask<Todo, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            return null;
+        }
+    }
+
+    public class TodoSorterImportance extends AsyncTask<Todo, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            //do sort
+            return null;
+        }
+    }
+
+    public class LocalInitShowAllTodos extends AsyncTask<Void, Void, List<Todo>> {
 
         @Override
         protected List<Todo> doInBackground(Void... voids) {
-            return AppDatabase.getInstance(giveContext()).todoDao().getAll();
+            List<Todo> todos = AppDatabase.getInstance(giveContext()).todoDao().getAll();
+
+            //sort
+            return todos;
         }
 
         @Override
@@ -301,6 +329,33 @@ public class TodoListActivity extends AppCompatActivity {
             for (Todo t: todos) {
                 AppDatabase.getInstance(giveContext()).todoDao().insert(t);
             }
+            return null;
+        }
+    }
+
+    // Moved here from newTodoActivtiy and modifyTodoActivity to implement cashing
+    public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().update(todos[0]);
+            return null;
+        }
+    }
+
+    public class LocalTodoDeleter extends AsyncTask<Todo, Void, Void> {
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
+            return null;
+        }
+    }
+
+
+    public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Todo... todos) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().insert(todos[0]);
             return null;
         }
     }
