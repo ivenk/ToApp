@@ -107,9 +107,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         Log.i(TAG, "onCreateButton: Creation date set is : " + new Date(new Date(date1, date2, date3, time1, time2).toInstant().toEpochMilli()));
 
         Todo t = new Todo(title, description, false, favourite, new Date(date1, date2, date3, time1, time2).getTime(), contacts);
-
-        new LocalTodoInserter().execute(t);
-
         Intent result = new Intent();
         result.putExtra("todo", t.toJSON().toString());
         setResult(RESULT_OK, result);
@@ -197,14 +194,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
         contactScroller.onContactDelete(id);
     }
 
-    public class LocalTodoInserter extends AsyncTask<Todo, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Todo... todos) {
-            AppDatabase.getInstance(getApplicationContext()).todoDao().insert(todos[0]);
-            return null;
-        }
-    }
 
 
 

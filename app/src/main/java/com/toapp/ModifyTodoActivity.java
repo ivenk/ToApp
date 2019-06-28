@@ -156,8 +156,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         }
 
         Todo newTodo = new Todo(todo.getId(),title, description, done, favourite, dateTime, contacts);
-
-        new LocalTodoUpdater().execute(newTodo);
         Intent result = new Intent();
         result.putExtra("todo", newTodo.toJSON().toString());
         setResult(RESULT_OK_UPDATE, result);
@@ -174,7 +172,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                new LocalTodoDeleter().execute(todo);
                 Intent result = new Intent();
                 result.putExtra("todo", todo.toJSON().toString());
                 setResult(RESULT_OK_DELETE, result);
@@ -197,22 +194,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Log.i(TAG, "startContactPicker: called from fragment !");
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(intent, CONTACT_PICKER);
-    }
-
-    public class LocalTodoUpdater extends AsyncTask<Todo, Void, Void> {
-        @Override
-        protected Void doInBackground(Todo... todos) {
-            AppDatabase.getInstance(getApplicationContext()).todoDao().update(todos[0]);
-            return null;
-        }
-    }
-
-    public class LocalTodoDeleter extends AsyncTask<Todo, Void, Void> {
-        @Override
-        protected Void doInBackground(Todo... todos) {
-            AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
-            return null;
-        }
     }
 
     private Contact queryContactResolver(int contactId) {
