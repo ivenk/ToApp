@@ -125,7 +125,6 @@ public class Todo implements IJsonable, IJSONBuildable {
             jsonObject.put("expiry", dueDate); // Due to naming convention on server side
             JSONArray contactArray = new JSONArray();
             for (String str : contacts.split(",")) {
-                Log.i("Todo", "toJSON: str : " + str);
                 contactArray.put(str);
             }
             jsonObject.put("contacts", contactArray);
