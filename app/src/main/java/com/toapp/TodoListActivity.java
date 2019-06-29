@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,8 @@ public class TodoListActivity extends AppCompatActivity {
 
     private List<Todo> todos;
     ViewGroup scrollLayout;
+
+    private boolean defaultSortingMode = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,6 +203,26 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     /**
+     * Called from asyntask.onPost.. to trigger display of todos after sorting if finished
+     * @param inTodos
+     */
+    private void onFinishedSorting(List<Todo> inTodos) {
+        this.todos = inTodos;
+        displayTodosFromTodo(inTodos);
+    }
+
+    /**
+     * Called from asyntask.onPost.. to trigger sorting after the local data has changed
+     */
+    private void onLocalChange() {
+        if(defaultSortingMode) {
+            new TodoSorterDate().execute();
+        } else {
+            new TodoSorterImportance().execute();
+        }
+    }
+
+    /**
      * Cleares all todos on the server and pushes the local todos.
      */
     public class RemoteInitTodoPusher extends AsyncTask<Todo, Void, Boolean> {
@@ -235,21 +258,35 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-    public class TodoSorterDate extends AsyncTask<Todo, Void, Void> {
+    public class TodoSorterDate extends AsyncTask<Todo, Void, List<Todo>> {
 
         @Override
-        protected Void doInBackground(Todo... todos) {
-            return null;
+        protected List<Todo> doInBackground(Todo... todos) {
+            List<Todo> sortTodos = Arrays.asList(todos);
+            Collections.sort(sortTodos, new TodoComparatorDate());
+            return sortTodos;
+        }
+
+        @Override
+        protected void onPostExecute(List<Todo> inTodos) {
+            super.onPostExecute(inTodos);
+            onFinishedSorting(inTodos);
         }
     }
 
-    public class TodoSorterImportance extends AsyncTask<Todo, Void, Void> {
-
+    public class TodoSorterImportance extends AsyncTask<Todo, Void, List<Todo>> {
 
         @Override
-        protected Void doInBackground(Todo... todos) {
-            //do sort
-            return null;
+        protected List<Todo> doInBackground(Todo... todos) {
+            List<Todo> sortTodos = Arrays.asList(todos);
+            Collections.sort(sortTodos, new TodoComparatorFavourite());
+            return sortTodos;
+        }
+
+        @Override
+        protected void onPostExecute(List<Todo> inTodos) {
+            super.onPostExecute(inTodos);
+            onFinishedSorting(inTodos);
         }
     }
 
@@ -258,8 +295,8 @@ public class TodoListActivity extends AppCompatActivity {
         @Override
         protected List<Todo> doInBackground(Void... voids) {
             List<Todo> todos = AppDatabase.getInstance(giveContext()).todoDao().getAll();
-
             //sort
+            Collections.sort(todos, new TodoComparatorDate());
             return todos;
         }
 
@@ -345,6 +382,12 @@ public class TodoListActivity extends AppCompatActivity {
             AppDatabase.getInstance(getApplicationContext()).todoDao().update(todos[0]);
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onLocalChange();
+        }
     }
 
     public class LocalTodoDeleter extends AsyncTask<Todo, Void, Void> {
@@ -352,6 +395,12 @@ public class TodoListActivity extends AppCompatActivity {
         protected Void doInBackground(Todo... todos) {
             AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onLocalChange();
         }
     }
 
@@ -362,6 +411,43 @@ public class TodoListActivity extends AppCompatActivity {
         protected Void doInBackground(Todo... todos) {
             AppDatabase.getInstance(getApplicationContext()).todoDao().insert(todos[0]);
             return null;
+        }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onLocalChange();
+        }
+    }
+
+    /**
+     * Used for sorting todos : done > favourite > date
+     */
+    public class TodoComparatorFavourite implements Comparator<Todo> {
+        @Override
+        public int compare(Todo todo, Todo t1) {
+            if(todo.isDone() != t1.isDone()) { // if they are not equal sorting is trivial
+                return (todo.isDone() ? 1 : -1); // if its done we return 1 for greater if its false we return -1 for smaller
+            } else if (todo.isFavourite() != t1.isFavourite()) { // both are either favourites or none is;
+                return ((todo.isFavourite())? 1 : -1); // if t..do is favourite t1 cant be so we keep order otherwise swap
+            } else {
+                return ((todo.getDueDate() > t1.getDueDate()? 1 : -1));
+            }
+        }
+    }
+
+    /**
+     * Used for sorting todos : done > date > favourite
+     */
+    public class TodoComparatorDate implements Comparator<Todo> {
+        @Override
+        public int compare(Todo todo, Todo t1) {
+            if(todo.isDone() != t1.isDone()) { // if they are not equal sorting is trivial
+                return (todo.isDone() ? 1 : -1); // if its done we return 1 for greater if its false we return -1 for smaller
+            } else if (todo.getDueDate() != t1.getDueDate()) { // both are either favourites or none is; if the dates are not equal we can sort here
+                return ((todo.getDueDate() > t1.getDueDate())? 1 : -1); // if t..do.getduetate larger then second one we are okay other wise swap
+            } else {
+                return ((todo.isFavourite()? 1: -1)); // we sort if its a favourite. Might do some unecessary sorting but at this point the result should be correct either way.
+            }
         }
     }
 }
