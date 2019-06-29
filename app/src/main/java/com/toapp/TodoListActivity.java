@@ -56,15 +56,18 @@ public class TodoListActivity extends AppCompatActivity {
         }
 
         scrollLayout = findViewById(R.id.scroll_layout);
-
         new LocalInitShowAllTodos().execute();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart: called !!!");
 
-        displayTodosFromTodo(this.todos);
+        Log.i(TAG, "onStart: todos are : " + this.todos);
+        if(this.todos != null) {
+            displayTodosFromTodo(this.todos);
+        }
     }
 
     // gets called once the create_new_todo button is clicked
@@ -98,6 +101,8 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     private void displayTodosFromTodo(List<Todo> todos){
+        Log.i(TAG, "displayTodosFromTodo: called with: " + todos.toString());
+
         List<CustomScrollElement> customScrollElements = convertToCSE(todos);
         scrollLayout.removeViewsInLayout(0, scrollLayout.getChildCount());
         for (CustomScrollElement c : customScrollElements) {
@@ -153,9 +158,8 @@ public class TodoListActivity extends AppCompatActivity {
                             return;
                         }
                         Todo t = new Todo(new JSONObject(str));
-                        this.todos.add(t); // cash
-                        new LocalTodoUpdater().execute(t); // local db
-                        new RemoteTodoUpdater().execute(t); // remote db
+                        updateTodoGlobally(t);
+
                         Log.i(TAG, "onActivityResult: remote update started");
                     } catch (JSONException jse) {
                         Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
@@ -170,9 +174,8 @@ public class TodoListActivity extends AppCompatActivity {
                         return;
                     }
                         Todo t = new Todo(new JSONObject(str));
-                        this.todos.remove(t);
-                        new LocalTodoDeleter().execute(t);
-                        new RemoteSingleTodoDeleter().execute(t);
+                        deleteTodoGlobally(t);
+
                         Log.i(TAG, "onActivityResult: remote update started");
                     } catch (JSONException jse) {
                         Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
@@ -181,7 +184,7 @@ public class TodoListActivity extends AppCompatActivity {
             } else if (resultCode == ModifyTodoActivity.RESULT_FAIL) {
                 Log.e(TAG, "onActivityResult: Result returned to from ModifyTodo activity is broken.");
             }
-        } else if (requestCode == CREATE) { // returning from new todo activity
+        } else if (requestCode == CREATE) { // returning from new t..do activity
             // do stuff
             if(data != null) {
                 try {
@@ -191,9 +194,7 @@ public class TodoListActivity extends AppCompatActivity {
                         return;
                     }
                     Todo t = new Todo(new JSONObject(str));
-                    this.todos.add(t);
-                    new LocalTodoInserter().execute(t);
-                    new RemoteSingleTodoPusher().execute(t);
+                    addTodoGlobally(t);
                     Log.i(TAG, "onActivityResult: remote update started");
                 } catch (JSONException jse) {
                     Log.e(TAG, "onActivityResult: received todo could not be converted from json", jse);
@@ -202,11 +203,38 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    private void updateTodoGlobally(Todo inTodo) {
+        Log.i(TAG, "updateTodoGlobally: called with todo: " + inTodo);
+        todos.remove(inTodo);
+        todos.add(inTodo);
+        onCacheChange(todos);
+        new LocalTodoUpdater().execute(inTodo); // local db
+        new RemoteTodoUpdater().execute(inTodo); // remote db
+
+    }
+
+    private void addTodoGlobally(Todo inTodo) {
+        Log.i(TAG, "addTodoGlobally: called with todo: " + inTodo);
+        this.todos.add(inTodo);
+        onCacheChange(todos);
+        new LocalTodoInserter().execute(inTodo);
+        new RemoteSingleTodoPusher().execute(inTodo);
+    }
+
+    private void deleteTodoGlobally(Todo inTodo) {
+        Log.i(TAG, "deleteTodoGlobally: called with todo : " + inTodo);
+        this.todos.remove(inTodo);
+        onCacheChange(todos);
+        new LocalTodoDeleter().execute(inTodo);
+        new RemoteSingleTodoDeleter().execute(inTodo);
+    }
+
     /**
      * Called from asyntask.onPost.. to trigger display of todos after sorting if finished
      * @param inTodos
      */
     private void onFinishedSorting(List<Todo> inTodos) {
+        Log.i(TAG, "onFinishedSorting: Sth finished sorting.");
         this.todos = inTodos;
         displayTodosFromTodo(inTodos);
     }
@@ -214,11 +242,11 @@ public class TodoListActivity extends AppCompatActivity {
     /**
      * Called from asyntask.onPost.. to trigger sorting after the local data has changed
      */
-    private void onLocalChange() {
+    private void onCacheChange(List<Todo> inTodos) {
         if(defaultSortingMode) {
-            new TodoSorterDate().execute();
+            new TodoSorterDate().execute(inTodos.toArray(new Todo[inTodos.size()]));
         } else {
-            new TodoSorterImportance().execute();
+            new TodoSorterImportance().execute(inTodos.toArray(new Todo[inTodos.size()]));
         }
     }
 
@@ -261,14 +289,15 @@ public class TodoListActivity extends AppCompatActivity {
     public class TodoSorterDate extends AsyncTask<Todo, Void, List<Todo>> {
 
         @Override
-        protected List<Todo> doInBackground(Todo... todos) {
-            List<Todo> sortTodos = Arrays.asList(todos);
+        protected List<Todo> doInBackground(Todo... inTodos) {
+            List<Todo> sortTodos = Arrays.asList(inTodos);
             Collections.sort(sortTodos, new TodoComparatorDate());
             return sortTodos;
         }
 
         @Override
         protected void onPostExecute(List<Todo> inTodos) {
+            Log.i("TodoSorterDate", "onPostExecute: ");
             super.onPostExecute(inTodos);
             onFinishedSorting(inTodos);
         }
@@ -285,6 +314,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<Todo> inTodos) {
+            Log.i("TodoSorterImportance", "onPostExecute: ");
             super.onPostExecute(inTodos);
             onFinishedSorting(inTodos);
         }
@@ -379,11 +409,6 @@ public class TodoListActivity extends AppCompatActivity {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            onLocalChange();
-        }
     }
 
     // Moved here from newTodoActivtiy and modifyTodoActivity to implement cashing
@@ -393,12 +418,6 @@ public class TodoListActivity extends AppCompatActivity {
             AppDatabase.getInstance(getApplicationContext()).todoDao().update(todos[0]);
             return null;
         }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            onLocalChange();
-        }
     }
 
     public class LocalTodoDeleter extends AsyncTask<Todo, Void, Void> {
@@ -406,12 +425,6 @@ public class TodoListActivity extends AppCompatActivity {
         protected Void doInBackground(Todo... todos) {
             AppDatabase.getInstance(getApplicationContext()).todoDao().delete(todos[0]);
             return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            onLocalChange();
         }
     }
 
@@ -422,11 +435,6 @@ public class TodoListActivity extends AppCompatActivity {
         protected Void doInBackground(Todo... todos) {
             AppDatabase.getInstance(getApplicationContext()).todoDao().insert(todos[0]);
             return null;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            onLocalChange();
         }
     }
 
