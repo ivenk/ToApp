@@ -378,6 +378,12 @@ public class TodoListActivity extends AppCompatActivity {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            onLocalChange();
+        }
     }
 
     // Moved here from newTodoActivtiy and modifyTodoActivity to implement cashing
