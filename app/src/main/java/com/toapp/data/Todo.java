@@ -129,7 +129,7 @@ public class Todo implements IJsonable, IJSONBuildable {
             }
             jsonObject.put("contacts", contactArray);
         } catch (JSONException jse) {
-            Log.e("Todo", "toJSON: JSONException occured while trying to create JSON representation of todo", jse);
+            Log.e("Todo", "toJSON: JSONException occurred while trying to create JSON representation of todo", jse);
         }
         return jsonObject;
     }
