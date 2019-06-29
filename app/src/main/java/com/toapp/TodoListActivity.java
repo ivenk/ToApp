@@ -313,14 +313,19 @@ public class TodoListActivity extends AppCompatActivity {
 
         @Override
         protected Todo doInBackground(Integer... ids) {
-            return AppDatabase.getInstance(giveContext()).todoDao().getById(ids[0]);
+            for (Todo t : todos) {
+                if(t.getId() == ids[0]) {
+                    return t;
+                }
+            }
+            return null;
         }
 
         @Override
         protected void onPostExecute(Todo todo) {
             super.onPostExecute(todo);
             if(todo == null) {
-                Log.e(TAG, "onPostExecute: Clicked todo could not be retrieved from database.");
+                Log.e(TAG, "onPostExecute: Clicked todo could not be retrieved.");
                 return;
             }
             startDetailView(todo);
