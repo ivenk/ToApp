@@ -97,7 +97,12 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             if(todo.getContacts() != null) {
                 // fill contactScroller
                 for (String str: todo.getContacts().split(",")) {
-                    contactScroller.attachNewContact(queryContactResolver(Integer.parseInt(str)));
+                    try {
+                        int id = Integer.parseInt(str);
+                        contactScroller.attachNewContact(queryContactResolver(id));
+                    } catch(NumberFormatException nfe) {
+                        Log.e(TAG, "onCreate: NumberFormatException occurred while trying to parse to an integer; value was : " + str, nfe);
+                    }
                 }
             }
         }
