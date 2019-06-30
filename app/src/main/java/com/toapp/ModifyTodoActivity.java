@@ -97,6 +97,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             if(todo.getContacts() != null) {
                 // fill contactScroller
                 for (String str: todo.getContacts().split(",")) {
+                    if((str == null)||(str == "")){ return ;}
                     try {
                         int id = Integer.parseInt(str);
                         contactScroller.attachNewContact(queryContactResolver(id));
