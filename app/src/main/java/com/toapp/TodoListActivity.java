@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
@@ -203,9 +204,18 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTodoGlobally(Todo inTodo) {
+    private void updateTodoGlobally(final Todo inTodo) {
         Log.i(TAG, "updateTodoGlobally: called with todo: " + inTodo);
-        todos.remove(inTodo);
+
+        List<Todo> toRemove = new ArrayList<>();
+
+        for (Todo t : todos) {
+            if(t.getId() == inTodo.getId()) {
+                toRemove.add(t);
+            }
+        }
+        todos.removeAll(toRemove);
+
         todos.add(inTodo);
         onCacheChange(todos);
         new LocalTodoUpdater().execute(inTodo); // local db
@@ -469,4 +479,8 @@ public class TodoListActivity extends AppCompatActivity {
             }
         }
     }
+
+    //TODO :
+    // 1. Cached objects currently cannot be updated/deleted; sth with the multi threading
+    // 2. Make sure checkboxes in listview are checked for done objects.
 }
