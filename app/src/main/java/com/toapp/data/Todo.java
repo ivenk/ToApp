@@ -117,6 +117,10 @@ public class Todo implements IJsonable, IJSONBuildable {
         this.done = done;
     }
 
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
+    }
+
     @Override
     public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
