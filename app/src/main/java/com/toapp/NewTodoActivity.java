@@ -216,8 +216,6 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     public void onScrollableCall(int id) {
-        Log.i(TAG, "onScrollableCall: Advanced contact options requested.");
-        //TODO: complete with intent launching.
-
+        contactScroller.showAdvancedContactDialog(id);
     }
 }
