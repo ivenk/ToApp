@@ -55,7 +55,7 @@ public class TodoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#6cd9cc\">" + "Your todos" + "</font>")));
+        getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#6cd9cc\">" + "Your To-Do's" + "</font>")));
 
         Intent intent = getIntent();
         boolean online = intent.getBooleanExtra("online", false);
@@ -542,4 +542,5 @@ public class TodoListActivity extends AppCompatActivity {
     }
 }
 
-// TODO Dropdown sorting options in lsit view
+// TODO change time format !!!!
+// TODO check sorting
