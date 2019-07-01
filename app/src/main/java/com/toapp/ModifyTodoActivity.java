@@ -31,7 +31,10 @@ import com.toapp.data.Todo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener, CustomContactScrollElement.IContactScrollListener {
@@ -48,15 +51,14 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
     private Todo todo;
 
-    private int date1;
-    private int date2;
-    private int date3;
+    private int year;
+    private int month;
+    private int day;
 
-    private int time1;
-    private int time2;
+    private int hour;
+    private int minute;
 
     private ContactScroller contactScroller;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +96,11 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             ((Switch)findViewById(R.id.modify_done_switch)).setChecked(todo.isDone());
 
             Date d = new Date(todo.getDueDate());
-            ((TextView)findViewById(R.id.modify_input_date)).setText("" + d.toString());
-            ((TextView)findViewById(R.id.modify_input_time)).setText("" + d.toString());
+            SimpleDateFormat sdfD = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+            SimpleDateFormat sdfT = new SimpleDateFormat("HH:mm", Locale.GERMANY);
+
+            ((TextView)findViewById(R.id.modify_input_date)).setText(sdfD.format(d));
+            ((TextView)findViewById(R.id.modify_input_time)).setText(sdfT.format(d));
 
             Log.i(TAG, "onCreate: contacts found :" + todo.getContacts());
             if(todo.getContacts() != null) {
@@ -166,11 +171,34 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Log.i(TAG, "onDateSet: with i: " + i + "i1" + i1 + "i2"+ i2);
         dateUpdated = true;
 
-        this.date1 = i;
-        this.date2 = i1;
-        this.date3 = i2;
+        this.year = i;
+        this.month = i1;
+        this.day = i2;
 
-        ((TextView)findViewById(R.id.input_date)).setText("" + i2 + "." + i1 + "." + i);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
+        String dateString = sdf.format(buildDate());
+        if (dateString == null) {
+            dateString = "";
+        }
+        ((TextView)findViewById(R.id.modify_input_date)).setText(dateString);
+    }
+
+    private Date buildDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        if(month != 0)
+            calendar.set(Calendar.MONTH, month);
+        if(year != 0)
+            calendar.set(Calendar.YEAR, year);
+        if(day != 0)
+            calendar.set(Calendar.DAY_OF_MONTH, day);
+        if(hour != 0)
+            calendar.set(Calendar.HOUR, hour);
+        if(minute != 0)
+            calendar.set(Calendar.MINUTE, minute);
+        Date date = calendar.getTime();
+        Log.i(TAG, "onCreateButton: Date: " + date.toString());
+        return date;
     }
 
     @Override
@@ -178,10 +206,15 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Log.i(TAG, "onTimeSet: got called !!!");
         timeUpdated = true;
 
-        this.time1 = i;
-        this.time2 = i1;
-        //TODO improve time format
-        ((TextView)findViewById(R.id.input_time)).setText("" + i + ":" + i1);
+        this.hour = i;
+        this.minute = i1;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.GERMANY);
+        String dateString = sdf.format(buildDate());
+        if (dateString == null) {
+            dateString = "";
+        }
+        ((TextView)findViewById(R.id.modify_input_time)).setText(dateString);
     }
 
     public void onCreateButton(View view) {
@@ -190,14 +223,12 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
         Boolean done = ((Switch)findViewById(R.id.modify_done_switch)).isChecked();
 
-        //TODO contacts are actually not added ?
         String contacts = contactScroller.getContactsString();
-
 
         long dateTime;
         if(timeUpdated || dateUpdated) {
             //TODO mind that only one might have been set !!! BUGG HERE !!
-            dateTime = new Date(date1, date2, date3, time1, time2).getTime();
+            dateTime = buildDate().getTime();
         } else {
             dateTime = todo.getDueDate();
         }

@@ -28,6 +28,7 @@ import com.toapp.data.Todo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class TodoListActivity extends AppCompatActivity {
     private final String TAG = "TodoListActivity";
@@ -147,9 +149,12 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     private List<CustomScrollElement> convertToCSE(List<Todo> todos) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd.MM.yyyy", Locale.GERMANY);
+
         List<CustomScrollElement> list = new ArrayList<>();
         for (Todo t : todos) {
-            list.add(new CustomScrollElement(this, t.getName(), new Date(t.getDueDate()).toString(), t.isFavourite(), t.isDone(), t.getId()));
+            String dateStr = sdf.format(new Date(t.getDueDate()));
+            list.add(new CustomScrollElement(this, t.getName(), dateStr, t.isFavourite(), t.isDone(), t.getId()));
         }
         return list;
     }
