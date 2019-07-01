@@ -94,9 +94,11 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             ((TextView)findViewById(R.id.modify_input_date)).setText("" + d.toString());
             ((TextView)findViewById(R.id.modify_input_time)).setText("" + d.toString());
 
+            Log.i(TAG, "onCreate: contacts found :" + todo.getContacts());
             if(todo.getContacts() != null) {
                 // fill contactScroller
                 for (String str: todo.getContacts().split(",")) {
+                    Log.i(TAG, "onCreate: in loop" + str);
                     if((str == null)||(str == "")){ return ;}
                     try {
                         int id = Integer.parseInt(str);
@@ -153,7 +155,8 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Boolean done = ((Switch)findViewById(R.id.modify_done_switch)).isChecked();
 
         //TODO contacts are actually not added ?
-        String contacts = "";
+        String contacts = contactScroller.getContactsString();
+
 
         long dateTime;
         if(timeUpdated || dateUpdated) {
