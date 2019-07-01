@@ -18,7 +18,7 @@
         <activity
             android:name=".ModifyTodoActivity"
             android:label="@string/title_activity_modify_todo"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".StartUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
