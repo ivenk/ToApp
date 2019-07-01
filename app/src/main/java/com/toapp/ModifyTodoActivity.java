@@ -240,6 +240,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
     @Override
     public void onScrollableCall(int id) {
-
+        contactScroller.showAdvancedContactDialog(id);
     }
 }

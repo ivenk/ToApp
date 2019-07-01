@@ -1,6 +1,8 @@
 package com.toapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -179,5 +181,44 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
     public void attachNewContact(Contact contact) {
         this.contacts.add(contact);
         showContacts();
+    }
+
+    public void showAdvancedContactDialog(int id) {
+        Log.i(TAG, "onScrollableCall: Advanced contact options called !");
+        Contact target = null;
+        for(Contact c : contacts) {
+            if(c.getId() == id) {
+                target = c;
+            }
+        }
+        if (target == null) {
+            Log.e(TAG, "showAdvancedContactDialog: Provided id could not be matched to contact in list");
+            return;
+        }
+
+        // show confirmation dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder((Context) mListener);
+        builder.setPositiveButton("SMS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // do sms intent
+            }
+        });
+        builder.setNeutralButton("Email", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // to email intent
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+
+        builder.setMessage(target.getName());
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
