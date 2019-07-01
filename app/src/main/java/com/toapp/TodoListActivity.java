@@ -513,3 +513,7 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 }
+
+// TODO the create/or modify few might not acutally allow the deletion of contacts since the inferace seems not to be implemented ?
+// TODO Implemented advanced options for contacts
+// TODO Dropdown sorting options in lsit view 
