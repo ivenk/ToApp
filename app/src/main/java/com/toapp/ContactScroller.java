@@ -142,11 +142,13 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
 
     public void onContactDelete(int id) {
         Log.i(TAG, "onContactDelete: Trying to delete contact with id" + id);
+        Contact d = null;
         for (Contact c: contacts) {
             if(c.getId() == id) {
-                contacts.remove(c);
+                d = c;
             }
         }
+        contacts.remove(d);
         showContacts();
     }
 
