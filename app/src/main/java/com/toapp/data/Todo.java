@@ -113,6 +113,10 @@ public class Todo implements IJsonable, IJSONBuildable {
         this.contacts = contacts;
     }
 
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
     @Override
     public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
