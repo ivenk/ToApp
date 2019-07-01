@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import java.util.Date;
 
 
-public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener {
+public class ModifyTodoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, ContactScroller.OnFragmentInteractionListener, CustomContactScrollElement.IContactScrollListener {
     private final String TAG = "ModifyTodoActivity";
 
     private final int CONTACT_PICKER = 1;
@@ -230,6 +230,16 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             contact.setEmail("");
         }
         return contact;
+
+    }
+
+    @Override
+    public void onScrollableDeletionCall(int id) {
+        contactScroller.onContactDelete(id);
+    }
+
+    @Override
+    public void onScrollableCall(int id) {
 
     }
 }
