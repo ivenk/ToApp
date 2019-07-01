@@ -115,6 +115,9 @@ class WebConnector{
             Log.e(TAG, "deleteAllTodos: ", ioe);
         } finally {
             try {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
                 if (reader != null)
                     reader.close();
             } catch (IOException ioe) {
@@ -152,6 +155,9 @@ class WebConnector{
             Log.e(TAG, "authenticateUser: IOException occured while trying to authenticate user", ioe);
         } finally {
             try {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
                 if (reader != null) {
                     reader.close();
                 }
@@ -222,6 +228,10 @@ class WebConnector{
             try {
                 if (reader != null)
                     reader.close();
+
+                if(out != null) {
+                    out.close();
+                }
             } catch (IOException ioe) {
                 Log.e(TAG, "deleteTodo: IOException occured while trying to close bufferedreader", ioe);
             }
@@ -248,6 +258,9 @@ class WebConnector{
             Log.e(TAG, "deleteTodo: IOException occurred while trying to delete todo with id " + id, ioe);
         } finally {
             try {
+                if(urlConnection != null) {
+                    urlConnection.disconnect();
+                }
                 if (reader != null)
                     reader.close();
             } catch (IOException ioe) {
