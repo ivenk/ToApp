@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -492,6 +493,22 @@ public class TodoListActivity extends AppCompatActivity {
                 return ((todo.getDueDate() > t1.getDueDate())? 1 : -1); // if t..do.getduetate larger then second one we are okay other wise swap
             } else {
                 return ((todo.isFavourite()? 1: -1)); // we sort if its a favourite. Might do some unecessary sorting but at this point the result should be correct either way.
+            }
+        }
+    }
+
+    public void onCheckBoxChanged(View view) {
+        Log.i(TAG, "onCheckBoxChanged: called !!!");
+        boolean checked = ((CheckBox) view).isChecked();
+        ViewGroup layout = (ViewGroup) view.getParent();
+        int id = Integer.parseInt(((TextView)layout.findViewById(R.id.customScrollTodoId)).getText().toString());
+
+        for(Todo t : this.todos) {
+            if (t.getId() == id) {
+                Todo newTodo = t;
+                newTodo.setDone(checked);
+                updateTodoGlobally(newTodo);
+                break;
             }
         }
     }
