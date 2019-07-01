@@ -98,9 +98,17 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
             Date d = new Date(todo.getDueDate());
             SimpleDateFormat sdfD = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY);
             SimpleDateFormat sdfT = new SimpleDateFormat("HH:mm", Locale.GERMANY);
-
             ((TextView)findViewById(R.id.modify_input_date)).setText(sdfD.format(d));
             ((TextView)findViewById(R.id.modify_input_time)).setText(sdfT.format(d));
+
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(d);
+            this.minute = c.get(Calendar.MINUTE);
+            this.hour = c.get(Calendar.HOUR);
+            this.day = c.get(Calendar.DAY_OF_MONTH);
+            this.month = c.get(Calendar.MONTH);
+            this.year = c.get(Calendar.YEAR);
 
             Log.i(TAG, "onCreate: contacts found :" + todo.getContacts());
             if(todo.getContacts() != null) {
@@ -226,6 +234,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         String contacts = contactScroller.getContactsString();
 
         long dateTime;
+
         if(timeUpdated || dateUpdated) {
             //TODO mind that only one might have been set !!! BUGG HERE !!
             dateTime = buildDate().getTime();
