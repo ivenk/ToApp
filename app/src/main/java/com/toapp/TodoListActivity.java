@@ -41,6 +41,7 @@ public class TodoListActivity extends AppCompatActivity {
     ViewGroup scrollLayout;
 
     private boolean defaultSortingMode = true;
+    private boolean activityLaunchesAllowed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +70,18 @@ public class TodoListActivity extends AppCompatActivity {
         if(this.todos != null) {
             displayTodosFromTodo(this.todos);
         }
+
+        this.activityLaunchesAllowed = true;
     }
 
     // gets called once the create_new_todo button is clicked
     public void onCreateNewTodo(View view) {
-        // launch activity for creating todos
-        Intent intent = new Intent(this, NewTodoActivity.class);
-        startActivityForResult(intent, CREATE);
+        if(activityLaunchesAllowed) {
+            activityLaunchesAllowed = false;
+            // launch activity for creating todos
+            Intent intent = new Intent(this, NewTodoActivity.class);
+            startActivityForResult(intent, CREATE);
+        }
     }
     
     public void onTodoSelected(View view) {
@@ -139,10 +145,13 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
     private void startDetailView(Todo todo) {
-        // There might be a better way to do this
-        Intent intent = new Intent(this, ModifyTodoActivity.class);
-        intent.putExtra("todo", todo.toJSON().toString());
-        startActivityForResult(intent, MODIFY);
+        if(activityLaunchesAllowed) {
+            this.activityLaunchesAllowed = false;
+            // There might be a better way to do this
+            Intent intent = new Intent(this, ModifyTodoActivity.class);
+            intent.putExtra("todo", todo.toJSON().toString());
+            startActivityForResult(intent, MODIFY);
+        }
     }
 
     @Override
@@ -207,15 +216,7 @@ public class TodoListActivity extends AppCompatActivity {
     private void updateTodoGlobally(final Todo inTodo) {
         Log.i(TAG, "updateTodoGlobally: called with todo: " + inTodo);
 
-        List<Todo> toRemove = new ArrayList<>();
-
-        for (Todo t : todos) {
-            if(t.getId() == inTodo.getId()) {
-                toRemove.add(t);
-            }
-        }
-        todos.removeAll(toRemove);
-
+        deleteFromCache(inTodo);
         todos.add(inTodo);
         onCacheChange(todos);
         new LocalTodoUpdater().execute(inTodo); // local db
@@ -233,10 +234,25 @@ public class TodoListActivity extends AppCompatActivity {
 
     private void deleteTodoGlobally(Todo inTodo) {
         Log.i(TAG, "deleteTodoGlobally: called with todo : " + inTodo);
-        this.todos.remove(inTodo);
+
+        deleteFromCache(inTodo);
         onCacheChange(todos);
         new LocalTodoDeleter().execute(inTodo);
         new RemoteSingleTodoDeleter().execute(inTodo);
+    }
+
+    private void deleteFromCache(Todo inTodo) {
+        Log.i(TAG, "deleteFromCache: Todos looks like this: " + this.todos.toString());
+        Log.i(TAG, "deleteFromCache: Class of todos" + todos.getClass());
+        List<Todo> toRemove = new ArrayList<>();
+        for (Todo t : todos) {
+            if(t.getId() == inTodo.getId()) {
+                toRemove.add(t);
+            }
+        }
+        if (toRemove != null) {
+            todos.removeAll(toRemove);
+        }
     }
 
     /**
@@ -300,7 +316,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         @Override
         protected List<Todo> doInBackground(Todo... inTodos) {
-            List<Todo> sortTodos = Arrays.asList(inTodos);
+            List<Todo> sortTodos = new ArrayList<>(Arrays.asList(inTodos));
             Collections.sort(sortTodos, new TodoComparatorDate());
             return sortTodos;
         }
@@ -317,7 +333,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         @Override
         protected List<Todo> doInBackground(Todo... todos) {
-            List<Todo> sortTodos = Arrays.asList(todos);
+            List<Todo> sortTodos = new ArrayList<>(Arrays.asList(todos));
             Collections.sort(sortTodos, new TodoComparatorFavourite());
             return sortTodos;
         }
