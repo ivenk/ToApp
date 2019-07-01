@@ -52,7 +52,7 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     private Boolean create;
 
-    //TODO still some buggs here! What if we only want to change the time not the date in update ? will not work currently.
+    // TODO still some buggs here! What if we only want to change the time not the date in update ? will not work currently.
     private boolean dateTimeUpdated;
     private ContactScroller contactScroller;
 
@@ -190,11 +190,14 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
     }
 
     @Override
-    public void onScrollableCall(int id) {
+    public void onScrollableDeletionCall(int id) {
         contactScroller.onContactDelete(id);
     }
 
+    @Override
+    public void onScrollableCall(int id) {
+        Log.i(TAG, "onScrollableCall: Advanced contact options requested.");
+        //TODO: complete with intent launching.
 
-
-
+    }
 }

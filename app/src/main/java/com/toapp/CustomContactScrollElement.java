@@ -11,6 +11,12 @@ public class CustomContactScrollElement extends LinearLayout {
     public CustomContactScrollElement(final Context context, final int id, String name) {
         super(context);
         View view = inflate(context, R.layout.custom_contact_scroll_element, this);
+        view.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((IContactScrollListener) context).onScrollableCall(id);
+            }
+        });
 
         TextView text = view.findViewById(R.id.contact_name_detail);
         text.setText(name);
@@ -19,13 +25,15 @@ public class CustomContactScrollElement extends LinearLayout {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((IContactScrollListener) context).onScrollableCall(id);
+                ((IContactScrollListener) context).onScrollableDeletionCall(id);
             }
         });
     }
 
     public interface IContactScrollListener {
-      void onScrollableCall (int id);
+      void onScrollableDeletionCall (int id);
+
+      void onScrollableCall(int id);
     }
 
 }
