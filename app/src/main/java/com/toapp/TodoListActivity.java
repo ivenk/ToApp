@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -44,7 +46,7 @@ public class TodoListActivity extends AppCompatActivity {
     private List<Todo> todos;
     ViewGroup scrollLayout;
 
-    private boolean defaultSortingMode = true;
+    private boolean defaultSortingMode = true; // default sorting mode should be sort by date
     private boolean activityLaunchesAllowed = true;
 
     @Override
@@ -63,6 +65,22 @@ public class TodoListActivity extends AppCompatActivity {
 
         scrollLayout = findViewById(R.id.scroll_layout);
         new LocalInitShowAllTodos().execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sortBy_Date:
+                defaultSortingMode = true;
+                onCacheChange(this.todos);
+                return true;
+            case R.id.sortBy_Favourite:
+                defaultSortingMode = false;
+                onCacheChange(this.todos);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
