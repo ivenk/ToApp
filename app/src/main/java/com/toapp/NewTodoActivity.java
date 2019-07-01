@@ -146,37 +146,26 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
             if(resultCode == Activity.RESULT_OK) {
                 Uri d = data.getData();
                 Cursor cursor = getContentResolver().query(d, null, null, null, null); //managedQuery(d, null, null, null, null);
-
-                if(cursor.moveToFirst()){
+                Contact contact = null;
+                if(cursor.moveToFirst()) {
                     String id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-                    String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
-                    String hasPhone = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-                    String number = "";
-
-                    if (hasPhone.equalsIgnoreCase("1")) {
-                        Cursor phones = getContentResolver().query(
-                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
-                                null, null);
-                        phones.moveToFirst();
-                        number = phones.getString(phones.getColumnIndex("data1"));
+                    int iid = -1;
+                    if((id == null)||(id == "")) {
+                        Log.e(TAG, "onActivityResult: id for contact could not be retrieved");
+                        return;
                     }
-
-                    String email = "";
-                    Cursor mailCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID, null, null);
-                    mailCursor.moveToFirst();
                     try {
-                        email = getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                    } catch (Exception e) {
-                        Log.e(TAG, "onActivityResult: We crashed trying to read mail", e);
-                        email = "";
+                        iid = Integer.parseInt(id);
+                    } catch (NumberFormatException nfe) {
+                        Log.e(TAG, "onActivityResult: id could not be parsed to integer", nfe);
+                        return;
                     }
-
-                    Log.i(TAG, "onActivityResult: id : " + id);
-                    Log.i(TAG, "onActivityResult: name : " + name);
-                    Log.i(TAG, "onActivityResult: number : " + number);
-                    Log.i(TAG, "onActivityResult: email : " + email);
-                    contactScroller.attachNewContact(new Contact(Integer.parseInt(id), name, number, email));
+                    contact = ContactReceiver.queryContactResolver(this, iid);
+                }
+                if(contact != null) {
+                    contactScroller.attachNewContact(contact);
+                } else {
+                    Log.e(TAG, "onActivityResult: Contact could not be created, left with null");
                 }
             }
         }

@@ -100,7 +100,7 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
                     if((str == null)||(str == "")){ return ;}
                     try {
                         int id = Integer.parseInt(str);
-                        contactScroller.attachNewContact(queryContactResolver(id));
+                        contactScroller.attachNewContact(ContactReceiver.queryContactResolver(this, id));
                     } catch(NumberFormatException nfe) {
                         Log.e(TAG, "onCreate: NumberFormatException occurred while trying to parse to an integer; value was : " + str, nfe);
                     }
@@ -202,35 +202,6 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         Log.i(TAG, "startContactPicker: called from fragment !");
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(intent, CONTACT_PICKER);
-    }
-
-    private Contact queryContactResolver(int contactId) {
-        Log.i(TAG, "queryContactResolver: Trying to find information for contact with id : " + contactId);
-        Contact contact = new Contact();
-        Cursor query = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, ContactsContract.Contacts._ID + " = ?", new String[]{Integer.toString(contactId)}, null);
-        if(query.moveToFirst()) {
-            contact.setId(contactId);
-
-            String name = query.getString(query.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
-            contact.setName(name);
-
-            String hasPhone = query.getString(query.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-            String number = "";
-
-            if (hasPhone.equalsIgnoreCase("1")) {
-                Cursor phones = getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId,
-                        null, null);
-                phones.moveToFirst();
-                number = phones.getString(phones.getColumnIndex("data1"));
-            }
-
-            contact.setNumber(number);
-            contact.setEmail("");
-        }
-        return contact;
-
     }
 
     @Override
