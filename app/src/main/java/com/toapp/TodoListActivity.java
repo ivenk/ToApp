@@ -507,7 +507,7 @@ public class TodoListActivity extends AppCompatActivity {
             if(todo.isDone() != t1.isDone()) { // if they are not equal sorting is trivial
                 return (todo.isDone() ? 1 : -1); // if its done we return 1 for greater if its false we return -1 for smaller
             } else if (todo.isFavourite() != t1.isFavourite()) { // both are either favourites or none is;
-                return ((todo.isFavourite())? 1 : -1); // if t..do is favourite t1 cant be so we keep order otherwise swap
+                return ((todo.isFavourite())? -1 : 1); // if t..do is favourite t1 cant be so we keep order otherwise swap
             } else {
                 return ((todo.getDueDate() > t1.getDueDate()? 1 : -1));
             }
@@ -525,7 +525,7 @@ public class TodoListActivity extends AppCompatActivity {
             } else if (todo.getDueDate() != t1.getDueDate()) { // both are either favourites or none is; if the dates are not equal we can sort here
                 return ((todo.getDueDate() > t1.getDueDate())? 1 : -1); // if t..do.getduetate larger then second one we are okay other wise swap
             } else {
-                return ((todo.isFavourite()? 1: -1)); // we sort if its a favourite. Might do some unecessary sorting but at this point the result should be correct either way.
+                return ((todo.isFavourite()? -1: 1)); // we sort if its a favourite. Might do some unecessary sorting but at this point the result should be correct either way.
             }
         }
     }
