@@ -15,8 +15,6 @@ public interface TodoDao {
     @Query("SELECT * FROM Todo")
     List<Todo> getAll();
 
-    //TODO: getsorted
-
     @Insert
     void insert(Todo todo);
 
