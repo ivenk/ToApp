@@ -1,11 +1,13 @@
 package com.toapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
@@ -111,6 +114,39 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         }
 
         PermissionRequester.CheckPermissions(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CONTACT_PICKER) {
+            if(resultCode == Activity.RESULT_OK) {
+                Uri d = data.getData();
+                Cursor cursor = getContentResolver().query(d, null, null, null, null); //managedQuery(d, null, null, null, null);
+                Contact contact = null;
+                if(cursor.moveToFirst()) {
+                    String id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                    int iid = -1;
+                    if((id == null)||(id == "")) {
+                        Log.e(TAG, "onActivityResult: id for contact could not be retrieved");
+                        return;
+                    }
+                    try {
+                        iid = Integer.parseInt(id);
+                    } catch (NumberFormatException nfe) {
+                        Log.e(TAG, "onActivityResult: id could not be parsed to integer", nfe);
+                        return;
+                    }
+                    contact = ContactReceiver.queryContactResolver(this, iid);
+                }
+                if(contact != null) {
+                    contactScroller.attachNewContact(contact);
+                } else {
+                    Log.e(TAG, "onActivityResult: Contact could not be created, left with null");
+                }
+            }
+        }
+
     }
 
     public void onDateClicked(View view) {
