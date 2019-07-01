@@ -2,6 +2,9 @@ package com.toapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -545,7 +548,17 @@ public class TodoListActivity extends AppCompatActivity {
             }
         }
     }
-}
+    public void onFavouriteChanged(View view) {
+        ViewGroup layout = (ViewGroup) view.getParent();
+        int id = Integer.parseInt(((TextView)layout.findViewById(R.id.customScrollTodoId)).getText().toString());
 
-// TODO change time format !!!!
-// TODO check sorting
+        for(Todo t : this.todos) {
+            if (t.getId() == id) {
+                Todo newTodo = t;
+                newTodo.setFavourite(!newTodo.isFavourite());
+                updateTodoGlobally(newTodo);
+                break;
+            }
+        }
+    }
+}
