@@ -495,8 +495,4 @@ public class TodoListActivity extends AppCompatActivity {
             }
         }
     }
-
-    //TODO :
-    // 1. Cached objects currently cannot be updated/deleted; sth with the multi threading
-    // 2. Make sure checkboxes in listview are checked for done objects.
 }
