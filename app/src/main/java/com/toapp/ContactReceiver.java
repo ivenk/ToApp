@@ -39,7 +39,7 @@ public class ContactReceiver {
         Cursor mailCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID+ " = "+id, null, null);
         mailCursor.moveToFirst();
         try {
-            email = context.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            email = mailCursor.getString(mailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
         } catch (Exception e) {
             Log.e(TAG, "onActivityResult: We crashed trying to read mail", e);
             email = "";
