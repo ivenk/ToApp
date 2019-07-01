@@ -9,7 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -50,7 +53,7 @@ public class TodoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_todo_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Your todos");
+        getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#6cd9cc\">" + "Your todos" + "</font>")));
 
         Intent intent = getIntent();
         boolean online = intent.getBooleanExtra("online", false);
@@ -60,6 +63,13 @@ public class TodoListActivity extends AppCompatActivity {
 
         scrollLayout = findViewById(R.id.scroll_layout);
         new LocalInitShowAllTodos().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
@@ -514,6 +524,4 @@ public class TodoListActivity extends AppCompatActivity {
     }
 }
 
-// TODO the create/or modify few might not acutally allow the deletion of contacts since the inferace seems not to be implemented ?
-// TODO Implemented advanced options for contacts
-// TODO Dropdown sorting options in lsit view 
+// TODO Dropdown sorting options in lsit view
