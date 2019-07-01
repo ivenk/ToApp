@@ -3,6 +3,7 @@ package com.toapp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import com.toapp.data.Contact;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,18 +200,37 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
             return;
         }
 
+        final String email = target.getEmail();
+        final String name = target.getName();
+        final String number = target.getNumber();
+        Log.i(TAG, "showAdvancedContactDialog: Email for contact: " + target.getName() + " was: " + email);
+
         // show confirmation dialog
         AlertDialog.Builder builder = new AlertDialog.Builder((Context) mListener);
         builder.setPositiveButton("SMS", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // do sms intent
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("smsto:" + number));  // This ensures only SMS apps respond
+                intent.putExtra("sms_body", "Hey ! Look what i found !");
+                if (intent.resolveActivity(((Context)mListener).getPackageManager()) != null) {
+                    startActivity(intent);
+                }
             }
         });
         builder.setNeutralButton("Email", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // to email intent
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_EMAIL, email);
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this amazing app !");
+                intent.putExtra(Intent.EXTRA_TEXT, "Dear " + name +", \n This app is great! It does not even crash that much !");
+                if (intent.resolveActivity(((Context)mListener).getPackageManager()) != null) {
+                    startActivity(intent);
+                }
             }
         });
 
