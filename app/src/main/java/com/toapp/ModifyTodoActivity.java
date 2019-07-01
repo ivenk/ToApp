@@ -151,6 +151,8 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
         String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
         Boolean favourite = ((Switch)findViewById(R.id.modify_favourite_switch)).isChecked();
         Boolean done = ((Switch)findViewById(R.id.modify_done_switch)).isChecked();
+
+        //TODO contacts are actually not added ?
         String contacts = "";
 
         long dateTime;
