@@ -290,6 +290,9 @@ public class ModifyTodoActivity extends AppCompatActivity implements DatePickerD
 
     @Override
     public void onScrollableCall(int id) {
-        contactScroller.showAdvancedContactDialog(id);
+        String title = ((TextView)findViewById(R.id.modify_title_input_label)).getText().toString();
+        String description = ((TextView)findViewById(R.id.modify_description_input_label)).getText().toString();
+        Log.i(TAG, "onScrollableCall: title = " + title);
+        contactScroller.showAdvancedContactDialog(id, title, description);
     }
 }

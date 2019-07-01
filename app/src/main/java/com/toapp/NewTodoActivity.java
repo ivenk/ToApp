@@ -216,6 +216,8 @@ public class NewTodoActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     public void onScrollableCall(int id) {
-        contactScroller.showAdvancedContactDialog(id);
+        String title = ((TextView)findViewById(R.id.title_input_label)).getText().toString();
+        String description = ((TextView)findViewById(R.id.description_input_label)).getText().toString();
+        contactScroller.showAdvancedContactDialog(id, title, description);
     }
 }

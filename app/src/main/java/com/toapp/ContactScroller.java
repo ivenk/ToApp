@@ -187,7 +187,7 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
         showContacts();
     }
 
-    public void showAdvancedContactDialog(int id) {
+    public void showAdvancedContactDialog(int id, final String tName, final String tDescription) {
         Log.i(TAG, "onScrollableCall: Advanced contact options called !");
         Contact target = null;
         for(Contact c : contacts) {
@@ -213,7 +213,7 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
                 // do sms intent
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("smsto:" + number));  // This ensures only SMS apps respond
-                intent.putExtra("sms_body", "Hey ! Look what i found !");
+                intent.putExtra("sms_body", "Title: " + tName + " Description: " + tDescription);
                 if (intent.resolveActivity(((Context)mListener).getPackageManager()) != null) {
                     startActivity(intent);
                 }
@@ -226,8 +226,8 @@ public class ContactScroller extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("*/*");
                 intent.putExtra(Intent.EXTRA_EMAIL, email);
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this amazing app !");
-                intent.putExtra(Intent.EXTRA_TEXT, "Dear " + name +", \n This app is great! It does not even crash that much !");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "" + tName);
+                intent.putExtra(Intent.EXTRA_TEXT, "" + tDescription);
                 if (intent.resolveActivity(((Context)mListener).getPackageManager()) != null) {
                     startActivity(intent);
                 }
