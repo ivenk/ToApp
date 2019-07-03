@@ -25,7 +25,9 @@
     <string name="add_contact">Add</string>
     <string name="sort_by_fav">SortBy Fav.</string>
     <string name="sort_by_date">SortBy Date.</string>
-
+    <string name="menu_remote_delete_all">Remote delete</string>
+    <string name="menu_local_delete_all">Local delete</string>
+    <string name="menu_synchronize">Synchronize</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_detail">DetailActivity</string>

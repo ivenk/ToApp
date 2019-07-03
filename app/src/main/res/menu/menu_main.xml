@@ -12,5 +12,21 @@
         android:orderInCategory="100"
         android:title="@string/sort_by_date"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/remote_delete_all"
+        android:title="@string/menu_remote_delete_all"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/local_delete_all"
+        android:title="@string/menu_local_delete_all"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/synchronize"
+        android:title="@string/menu_synchronize"
+        app:showAsAction="never"
+        />
+
 
 </menu>
