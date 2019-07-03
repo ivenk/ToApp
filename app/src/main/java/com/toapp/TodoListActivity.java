@@ -83,6 +83,12 @@ public class TodoListActivity extends AppCompatActivity {
                 defaultSortingMode = false;
                 onCacheChange(this.todos);
                 return true;
+            case R.id.local_delete_all:
+                return true;
+            case R.id.remote_delete_all:
+                return true;
+            case R.id.synchronize:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -330,6 +336,19 @@ public class TodoListActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
             Log.i(TAG, "onPostExecute: Returned :" + result);
+        }
+    }
+
+    public class RemoteTodoDeleter extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            return new WebOperator().deleteAllTodos();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            Log.i(TAG, "onPostExecute: Returned: " + result);
         }
     }
 
