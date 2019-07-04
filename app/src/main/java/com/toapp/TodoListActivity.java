@@ -327,6 +327,7 @@ public class TodoListActivity extends AppCompatActivity {
      * Called from asyntask.onPost.. to trigger sorting after the local data has changed
      */
     private void onCacheChange(List<Todo> inTodos) {
+        Log.i(TAG, "onCacheChange: called with inTodos: " + inTodos);
         if(defaultSortingMode) {
             new TodoSorterDate().execute(inTodos.toArray(new Todo[inTodos.size()]));
         } else {
