@@ -120,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
     private void showLoginErrorMessage(String errorMessage) {
         this.errorMessage.setVisibility(View.VISIBLE);
         this.errorMessage.setText(errorMessage);
-        // TODO: maybe check if the text actually fits ?
     }
 
     private void displayLoading() {
