@@ -76,6 +76,12 @@ public class LoginActivity extends AppCompatActivity {
         passField.addTextChangedListener(myTextWatcher);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        hideLoading();
+    }
+
     public void onLoginButtonClicked(View view) {
         Log.i(TAG, "onLoginButtonClicked: Login click registered");
         String mail = userField.getText().toString();
