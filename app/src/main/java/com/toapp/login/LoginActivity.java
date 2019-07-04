@@ -102,9 +102,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void authenticationResult(Boolean result) {
         Log.i(TAG, "authenticationResult: called with : " + result);
-        hideLoading();
-
         if(!result) {
+            hideLoading();
             showLoginErrorMessage(getString(R.string.login_failed));
         } else {
             Intent intent = new Intent(this, TodoListActivity.class);
@@ -154,6 +153,11 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(User... params) {
+            try {
+                Thread.sleep(2000);
+            } catch(InterruptedException ie) {
+                Log.e(TAG, "doInBackground: something woke me up", ie);
+            }
             WebOperator webOperator = new WebOperator();
             return webOperator.authenticateUser(params[0]);
         }
