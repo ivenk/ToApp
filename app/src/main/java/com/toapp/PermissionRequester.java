@@ -23,8 +23,8 @@ public class PermissionRequester {
         final List<String> permissionsList = new ArrayList<String>();
         if (!addPermission(context, permissionsList, Manifest.permission.READ_CONTACTS))
             permissionsNeeded.add("Read Contacts");
-        if (!addPermission(context, permissionsList, Manifest.permission.WRITE_CONTACTS))
-            permissionsNeeded.add("Write Contacts");
+ //       if (!addPermission(context, permissionsList, Manifest.permission.WRITE_CONTACTS))
+ //           permissionsNeeded.add("Write Contacts");
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
                 String message = "You need to grant access to " + permissionsNeeded.get(0);
