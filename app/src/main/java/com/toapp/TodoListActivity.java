@@ -84,10 +84,25 @@ public class TodoListActivity extends AppCompatActivity {
                 onCacheChange(this.todos);
                 return true;
             case R.id.local_delete_all:
+                Log.i(TAG, "onOptionsItemSelected: Local delete all called.");
+                // delete from db
+                new LocalTodosDeleter().execute();
+                // clear cache
+                onCacheChange(new ArrayList<Todo>());
                 return true;
             case R.id.remote_delete_all:
+                Log.i(TAG, "onOptionsItemSelected: Remote delete all called.");
+                // remote delete
+                new RemoteTodoDeleter().execute();
                 return true;
             case R.id.synchronize:
+                Log.i(TAG, "onOptionsItemSelected: Synchronize called.");
+                if(todos.size() != 0) {
+                    new RemoteInitTodoPusher().execute(todos.toArray(new Todo[todos.size()]));
+                } else {
+                    // if there was no initial sync yet and there are no local todos we have to do a pull
+                    new RemoteTodoPuller().execute();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -352,6 +367,16 @@ public class TodoListActivity extends AppCompatActivity {
         }
     }
 
+    public class LocalTodosDeleter extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            AppDatabase.getInstance(getApplicationContext()).todoDao().deleteAllTodos();
+            return null;
+        }
+    }
+
+
     public class RemoteTodoPuller extends AsyncTask<Void, Void, List<Todo>> {
 
         @Override
@@ -363,8 +388,8 @@ public class TodoListActivity extends AppCompatActivity {
         protected void onPostExecute(List<Todo> inTodos) {
             super.onPostExecute(inTodos);
             todos = inTodos;
+            onCacheChange(inTodos);
             new LocalTodoPusher().execute(inTodos.toArray(new Todo[inTodos.size()]));
-            displayTodosFromTodo(inTodos);
         }
     }
 
