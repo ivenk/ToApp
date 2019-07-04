@@ -26,4 +26,7 @@ public interface TodoDao {
 
     @Query("SELECT * FROM Todo WHERE id=:inId")
     Todo getById(int inId);
+
+    @Query("DELETE FROM Todo")
+    void deleteAllTodos();
 }
